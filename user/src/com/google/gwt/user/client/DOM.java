@@ -22,9 +22,14 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.OptionElement;
 import com.google.gwt.dom.client.SelectElement;
+import com.google.gwt.dom.client.Node;
 import com.google.gwt.safehtml.shared.annotations.IsSafeHtml;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.impl.DOMImpl;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.PointerEvents;
+
 
 /**
  * This class provides a set of static methods that allow you to manipulate the
@@ -168,6 +173,15 @@ public class DOM {
    */
   public static com.google.gwt.user.client.Element createColGroup() {
     return Document.get().createColGroupElement().cast();
+  }
+
+  /**
+   * Creates a Comment.
+   *
+   * @return the newly-created comment node
+   */
+  public static Node createComment(String comment) {
+    return Document.get().createComment(comment);
   }
 
   /**
@@ -1491,5 +1505,115 @@ public class DOM {
    */
   public static com.google.gwt.user.client.Element asOld(Element elem) {
     return (com.google.gwt.user.client.Element) elem;
+  }
+
+  public static native boolean isFocusable(com.google.gwt.user.client.Element element) /*-{
+    if (!element) return false;
+
+    if(!element.tagName || !element.getAttribute) return false;
+    // Check if the element is disabled
+    if (element.disabled) return false;
+
+    // Check if the element has a tabindex attribute
+    var tabindex = element.getAttribute('tabindex');
+    if (tabindex !== null) {
+      // If tabindex is 0 or greater, the element is focusable
+      if (parseInt(tabindex, 10) >= 0) return true;
+    }
+
+    // Check if the element is natively focusable
+    var focusableElements = [
+      'a', 'button', 'input', 'select', 'textarea', 'area', 'iframe', 'object', 'embed',
+    ];
+    return focusableElements.includes(element.tagName.toLowerCase());
+  }-*/;
+
+  public static com.google.gwt.user.client.Element getFirstFocusable(Element node) {
+    int count = node.getChildCount(), i = 0;
+    for (; i < count; i++) {
+      Node childNode = node.getChild(i);
+      if (!(childNode instanceof Element)) {
+        continue;
+      }
+      com.google.gwt.user.client.Element child = (com.google.gwt.user.client.Element) childNode;
+      if (isFocusable(child)) {
+        return child;
+      }
+      com.google.gwt.user.client.Element next = getFirstFocusable(child);
+      if (next != null) {
+        return next;
+      }
+    }
+    return null;
+  }
+
+  public static com.google.gwt.user.client.Element getLastFocusable(com.google.gwt.user.client.Element node) {
+    int count = node.getChildCount(), i = 0;
+    com.google.gwt.user.client.Element lastFocusable = null;
+    for (; i < count; i++) {
+      Node childNode = node.getChild(i);
+      if (!(childNode instanceof Element)) {
+        continue;
+      }
+      com.google.gwt.user.client.Element child = (com.google.gwt.user.client.Element) childNode;
+      if (isFocusable(child)) {
+        lastFocusable = child;
+      } else {
+        com.google.gwt.user.client.Element next = getLastFocusable(child);
+        if (next != null) {
+          lastFocusable = next;
+        }
+      }
+    }
+    return lastFocusable;
+  }
+
+  public static native com.google.gwt.user.client.Element getFocus() /*-{
+    return $wnd.document.activeElement;
+  }-*/;
+
+  public static native boolean hasFocus(com.google.gwt.user.client.Element node) /*-{
+    return node === $wnd.document.activeElement;
+  }-*/;
+
+  public static native int getOuterWidth(com.google.gwt.user.client.Element node) /*-{
+    var style = getComputedStyle(node),
+            lm = parseInt(style.marginLeft, 10),
+            rm = parseInt(style.marginRight, 10);
+    return lm + node.offsetWidth + rm;
+  }-*/;
+
+  public static native int getOuterHeight(com.google.gwt.user.client.Element node) /*-{
+    var style = getComputedStyle(node),
+            lm = parseInt(style.marginTop, 10),
+            rm = parseInt(style.marginBottom, 10);
+    return lm + node.offsetHeight + rm;
+  }-*/;
+
+  public static void setPointerCapture(com.google.gwt.user.client.Element element, int pointerId) {
+    PointerEvents.setPointerCapture(element, pointerId);
+  }
+
+  public static void releasePointerCapture(com.google.gwt.user.client.Element element, int pointerId) {
+    PointerEvents.releasePointerCapture(element, pointerId);
+  }
+
+  public static boolean hasPointerCapture(com.google.gwt.user.client.Element element, int pointerId) {
+    return PointerEvents.hasPointerCapture(element, pointerId);
+  }
+
+  public static void invokeLater(Scheduler.ScheduledCommand cmd) {
+    Scheduler.get().scheduleDeferred(cmd);
+  }
+
+  public static void invokeLater(Scheduler.ScheduledCommand cmd, int timeout) {
+    Timer t = new Timer() {
+
+      @Override
+      public void run() {
+        cmd.execute();
+      }
+    };
+    t.schedule(timeout);
   }
 }

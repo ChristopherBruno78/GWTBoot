@@ -53,6 +53,15 @@ public class BrowserEvents {
   public static final String MOUSEOUT = "mouseout";
   public static final String MOUSEOVER = "mouseover";
   public static final String MOUSEUP = "mouseup";
+  public static final String POINTERDOWN = "pointerdown";
+  public static final String POINTERMOVE = "pointermove";
+  public static final String POINTEROUT = "pointerout";
+  public static final String POINTERLEAVE = "pointerleave";
+  public static final String POINTEROVER = "pointerover";
+  public static final String POINTERENTER = "pointerenter";
+  public static final String POINTERUP = "pointerup";
+  public static final String POINTERCANCEL = "pointercancel";
+
   @Deprecated
   public static final String MOUSEWHEEL = "mousewheel";
   public static final String WHEEL = "wheel";

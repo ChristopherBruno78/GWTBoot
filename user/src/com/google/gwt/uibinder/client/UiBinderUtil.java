@@ -21,6 +21,7 @@ import com.google.gwt.dom.client.Node;
 import com.google.gwt.safehtml.shared.annotations.IsSafeHtml;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.core.client.Scheduler;
 
 /**
  * Static helper methods used by UiBinder. These methods are likely to move,
@@ -97,6 +98,15 @@ public class UiBinderUtil {
       UIObject.setVisible(hiddenDiv, false);
       RootPanel.getBodyElement().appendChild(hiddenDiv);
     }
+  }
+
+  public static void removeHiddenDiv() {
+    Scheduler.get().scheduleDeferred(() -> {
+      if(hiddenDiv != null) {
+        hiddenDiv.removeFromParent();
+        hiddenDiv = null;
+      }
+    });
   }
 
   private static void orphan(Node node) {

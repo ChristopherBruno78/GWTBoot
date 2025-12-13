@@ -21,12 +21,8 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.TypeOracleException;
+import com.google.gwt.dev.util.Util;
 import com.google.gwt.resources.ext.ClientBundleRequirements;
-import com.google.gwt.thirdparty.guava.common.hash.HashCode;
-import com.google.gwt.thirdparty.guava.common.hash.Hashing;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 
 /**
  * Generates Multipart HTML files.
@@ -67,7 +63,9 @@ public class MhtmlClientBundleGenerator extends AbstractClientBundleGenerator {
         "GWT.getModuleBaseURL().startsWith(\"https\")", true, true);
     resourceContext.setIsHttpsIdent(isHttpsIdent);
 
+    // CHECKSTYLE_OFF
     // "mhtml:" + GWT.getModuleBaseURL() + "partialPath!cid:"
+    // CHECKSTYLE_ON
     bundleBaseIdent = fields.define(stringType, "bundleBase", null, true, true);
     resourceContext.setBundleBaseIdent(bundleBaseIdent);
   }
@@ -76,9 +74,8 @@ public class MhtmlClientBundleGenerator extends AbstractClientBundleGenerator {
   protected void doCreateBundleForPermutation(TreeLogger logger,
       GeneratorContext generatorContext, FieldsImpl fields,
       String generatedSimpleSourceName) throws UnableToCompleteException {
-    HashCode hash = Hashing.murmur3_128().hashString(generatedSimpleSourceName,
-        StandardCharsets.UTF_8);
-    String partialPath = hash.toString().toUpperCase(Locale.ROOT) + BUNDLE_EXTENSION;
+    String partialPath = Util.computeStrongName(Util.getBytes(generatedSimpleSourceName))
+        + BUNDLE_EXTENSION;
     resourceContext.setPartialPath(partialPath);
     fields.setInitializer(bundleBaseIdent,
         "\"mhtml:\" + GWT.getModuleBaseURL() + \"" + partialPath + "!cid:\"");

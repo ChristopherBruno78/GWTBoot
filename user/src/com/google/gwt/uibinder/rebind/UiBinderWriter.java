@@ -1674,6 +1674,8 @@ public class UiBinderWriter implements Statements {
     writeOwnerFieldSetters(w);
 
     writeCssInjectors(w);
+    w.write("UiBinderUtil.removeHiddenDiv();");
+    w.newline();
 
     w.write("return %s;", rootField.getNextReference());
     w.outdent();
@@ -1712,7 +1714,11 @@ public class UiBinderWriter implements Statements {
     designTime.writeAttributes(this);
     w.newline();
 
-    w.write("return new Widgets(owner).%s;", rootField.getNextReference());
+    w.write("var ret = new Widgets(owner).%s;", rootField.getNextReference());
+    w.newline();
+    w.write("UiBinderUtil.removeHiddenDiv();");
+    w.newline();
+    w.write("return ret;");
     w.outdent();
     w.write("}");
 

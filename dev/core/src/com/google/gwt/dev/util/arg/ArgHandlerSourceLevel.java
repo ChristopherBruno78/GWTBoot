@@ -32,12 +32,12 @@ public class ArgHandlerSourceLevel extends ArgHandlerString {
 
   @Override
   public String[] getDefaultArgs() {
-    return new String[] {getTag(), SourceLevel.JAVA8.getStringValue()};
+    return new String[] {getTag(), SourceLevel.JAVA11.getStringValue()};
   }
 
   @Override
   public String getPurpose() {
-    return "Specifies Java source level (defaults to " + SourceLevel.JAVA8.getStringValue() + ")";
+    return "Specifies Java source level (defaults to " + SourceLevel.JAVA11.getStringValue() + ")";
   }
 
   @Override

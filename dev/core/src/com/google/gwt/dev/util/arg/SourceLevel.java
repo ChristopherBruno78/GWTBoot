@@ -152,8 +152,8 @@ public enum SourceLevel {
     } catch (IllegalArgumentException e) {
       // If the version can not be parsed fallback to JAVA8.
     }
-    // If everything fails set default to JAVA8.
-    return JAVA8;
+    // If everything fails set default to JAVA11.
+    return JAVA11;
   }
 
   /**

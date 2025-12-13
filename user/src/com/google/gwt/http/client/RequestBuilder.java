@@ -22,6 +22,9 @@ import com.google.gwt.xhr.client.XMLHttpRequest;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.google.gwt.user.client.MetaData.meta;
+
+
 /**
  * Builder for constructing {@link com.google.gwt.http.client.Request} objects.
  * 
@@ -155,6 +158,15 @@ public class RequestBuilder {
 
     this.httpMethod = httpMethod;
     this.url = url;
+
+    String csrfToken = meta("csrf-token");
+    if (csrfToken == null) {
+        csrfToken = meta("csrf");
+    }
+
+    if(csrfToken != null) {
+        setHeader("X-CSRF-Token", csrfToken);
+    }
   }
 
   /**

@@ -41,9 +41,11 @@ class InlineResourceContext extends StaticResourceContext {
       logger.log(TreeLogger.DEBUG, "Inlining", null);
 
       String base64Contents = toBase64(data);
-      @SuppressWarnings("checkstyle:SpaceAfterColon")
+
+      // CHECKSTYLE_OFF
       String encoded = "\"data:" + mimeType.replaceAll("\"", "\\\\\"")
           + ";base64," + base64Contents + "\"";
+      // CHECKSTYLE_ON
 
       /*
        * We know that the encoded format will be one byte per character, since

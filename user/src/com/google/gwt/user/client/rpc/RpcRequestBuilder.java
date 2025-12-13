@@ -19,6 +19,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 
+import static com.google.gwt.user.client.MetaData.meta;
+
 /**
  * This class encapsulates the logic necessary to configure a RequestBuilder for
  * use with an RPC proxy object. Users who wish to alter the specifics of the
@@ -151,7 +153,15 @@ public class RpcRequestBuilder {
    *         RpcRequestBuilder's caller.
    */
   protected RequestBuilder doCreate(String serviceEntryPoint) {
-    return new RequestBuilder(RequestBuilder.POST, serviceEntryPoint);
+    RequestBuilder rb = new RequestBuilder(RequestBuilder.POST, serviceEntryPoint);
+    String csrfToken = meta("csrf-token");
+    if (csrfToken == null) {
+        csrfToken = meta("csrf");
+    }
+    if(csrfToken != null) {
+        rb.setHeader("X-CSRF-Token", csrfToken);
+    }
+    return rb;
   }
 
   /**
