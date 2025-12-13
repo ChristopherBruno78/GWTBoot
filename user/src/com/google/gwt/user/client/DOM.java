@@ -29,6 +29,7 @@ import com.google.gwt.user.client.impl.DOMImpl;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.PointerEvents;
+import com.google.gwt.dom.client.DOMRect;
 
 
 /**
@@ -1507,88 +1508,31 @@ public class DOM {
     return (com.google.gwt.user.client.Element) elem;
   }
 
-  public static native boolean isFocusable(com.google.gwt.user.client.Element element) /*-{
-    if (!element) return false;
 
-    if(!element.tagName || !element.getAttribute) return false;
-    // Check if the element is disabled
-    if (element.disabled) return false;
-
-    // Check if the element has a tabindex attribute
-    var tabindex = element.getAttribute('tabindex');
-    if (tabindex !== null) {
-      // If tabindex is 0 or greater, the element is focusable
-      if (parseInt(tabindex, 10) >= 0) return true;
+    public static DOMRect getBoundingClientRect(Element element) {
+       return impl.getBoundingClientRect(element);
     }
 
-    // Check if the element is natively focusable
-    var focusableElements = [
-      'a', 'button', 'input', 'select', 'textarea', 'area', 'iframe', 'object', 'embed',
-    ];
-    return focusableElements.includes(element.tagName.toLowerCase());
-  }-*/;
 
-  public static com.google.gwt.user.client.Element getFirstFocusable(Element node) {
-    int count = node.getChildCount(), i = 0;
-    for (; i < count; i++) {
-      Node childNode = node.getChild(i);
-      if (!(childNode instanceof Element)) {
-        continue;
-      }
-      com.google.gwt.user.client.Element child = (com.google.gwt.user.client.Element) childNode;
-      if (isFocusable(child)) {
-        return child;
-      }
-      com.google.gwt.user.client.Element next = getFirstFocusable(child);
-      if (next != null) {
-        return next;
-      }
-    }
-    return null;
+  public static boolean isFocusable(Element element)  {
+    return impl.isFocusable(element);
   }
 
-  public static com.google.gwt.user.client.Element getLastFocusable(com.google.gwt.user.client.Element node) {
-    int count = node.getChildCount(), i = 0;
-    com.google.gwt.user.client.Element lastFocusable = null;
-    for (; i < count; i++) {
-      Node childNode = node.getChild(i);
-      if (!(childNode instanceof Element)) {
-        continue;
-      }
-      com.google.gwt.user.client.Element child = (com.google.gwt.user.client.Element) childNode;
-      if (isFocusable(child)) {
-        lastFocusable = child;
-      } else {
-        com.google.gwt.user.client.Element next = getLastFocusable(child);
-        if (next != null) {
-          lastFocusable = next;
-        }
-      }
-    }
-    return lastFocusable;
+  public static com.google.gwt.user.client.Element getFocus() {
+      return asOld(impl.getFocus());
   }
 
-  public static native com.google.gwt.user.client.Element getFocus() /*-{
-    return $wnd.document.activeElement;
-  }-*/;
+  public static boolean hasFocus(Element node) {
+      return impl.hasFocus(node);
+  }
 
-  public static native boolean hasFocus(com.google.gwt.user.client.Element node) /*-{
-    return node === $wnd.document.activeElement;
-  }-*/;
+  public static int getOuterWidth(Element node) {
+      return impl.getOuterWidth(node);
+  }
 
-  public static native int getOuterWidth(com.google.gwt.user.client.Element node) /*-{
-    var style = getComputedStyle(node),
-            lm = parseInt(style.marginLeft, 10),
-            rm = parseInt(style.marginRight, 10);
-    return lm + node.offsetWidth + rm;
-  }-*/;
-
-  public static native int getOuterHeight(com.google.gwt.user.client.Element node) /*-{
-    var style = getComputedStyle(node),
-            lm = parseInt(style.marginTop, 10),
-            rm = parseInt(style.marginBottom, 10);
-    return lm + node.offsetHeight + rm;
-  }-*/;
+  public static int getOuterHeight(Element node) {
+      return impl.getOuterHeight(node);
+  }
 
   public static void setPointerCapture(com.google.gwt.user.client.Element element, int pointerId) {
     PointerEvents.setPointerCapture(element, pointerId);

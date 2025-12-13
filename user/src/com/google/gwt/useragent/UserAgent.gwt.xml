@@ -51,4 +51,5 @@
 
   <!-- Deferred binding to optimize Core based on user agent. -->
   <inherits name="com.google.gwt.core.CoreWithUserAgent"/>
+  <inherits name="com.google.gwt.useragent.Platform" />
 </module>

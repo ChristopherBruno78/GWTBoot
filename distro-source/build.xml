@@ -75,7 +75,7 @@
     <!-- cute.  zipinfo says the zip has good perms, unzip gets it right, but
          ant <unzip> leaves the perms as non-executable... go figure. -->
     <chmod perm="uga+rx">
-      <fileset dir="${gwt.build.staging}/gwt-${gwt.version}">
+      <fileset dir="${gwt.build.staging}/gwt-boot-${gwt.version}">
         <patternset refid="chmod.executables"/>
       </fileset>
     </chmod>

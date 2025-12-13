@@ -19,6 +19,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
+import com.google.gwt.dom.client.DOMRect;
 
 /**
  * Native implementation associated with {@link com.google.gwt.user.client.DOM}.
@@ -129,6 +130,55 @@ public abstract class DOMImpl {
   public native int getEventsSunk(Element elem) /*-{
     return elem.__eventBits || 0;
   }-*/;
+
+  public native DOMRect getBoundingClientRect(Element element) /*-{
+        var rect = element.getBoundingClientRect();
+        return @com.edusoftwerks.gwt.mosaic.widgets.shared.geometry.Rectangle::new(DDDD)(
+            rect.left, rect.top, rect.width, rect.height);
+   }-*/;
+
+  public native boolean isFocusable(Element element) /*-{
+        if (!element) return false;
+
+        if(!element.tagName || !element.getAttribute) return false;
+        // Check if the element is disabled
+        if (element.disabled) return false;
+
+        // Check if the element has a tabindex attribute
+        var tabindex = element.getAttribute('tabindex');
+        if (tabindex !== null) {
+            // If tabindex is 0 or greater, the element is focusable
+            if (parseInt(tabindex, 10) >= 0) return true;
+        }
+
+        // Check if the element is natively focusable
+        var focusableElements = [
+            'a', 'button', 'input', 'select', 'textarea', 'area', 'iframe', 'object', 'embed',
+        ];
+        return focusableElements.includes(element.tagName.toLowerCase());
+    }-*/;
+
+    public native Element getFocus() /*-{
+        return $wnd.document.activeElement;
+    }-*/;
+
+    public native boolean hasFocus(Element node) /*-{
+        return node === $wnd.document.activeElement;
+    }-*/;
+
+    public native int getOuterWidth(Element node) /*-{
+        var style = getComputedStyle(node),
+            lm = parseInt(style.marginLeft, 10),
+            rm = parseInt(style.marginRight, 10);
+        return lm + node.offsetWidth + rm;
+    }-*/;
+
+    public native int getOuterHeight(Element node) /*-{
+        var style = getComputedStyle(node),
+            lm = parseInt(style.marginTop, 10),
+            rm = parseInt(style.marginBottom, 10);
+        return lm + node.offsetHeight + rm;
+    }-*/;
 
   public abstract void insertChild(Element parent, Element child, int index);
 

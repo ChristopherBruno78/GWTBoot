@@ -1,0 +1,43 @@
+<module>
+    <define-property name="gwt.platform" values="ipad,iphone,android,windows,macos,linux"/>
+    <property-provider name="gwt.platform"><![CDATA[
+        // Detect from user agent.
+        var ua = navigator.userAgent.toLowerCase();
+        if(ua.indexOf("android") !== -1) {
+           return "android";
+        }
+        else if(ua.indexOf("iphone") !== -1) {
+            return "iphone";
+        }
+        else if(ua.indexOf("ipad") !== -1) {
+            return "ipad";
+        }
+        else if(ua.indexOf("windows nt") !== -1) {
+           return "windows";
+        }
+        else if(ua.indexOf("macintosh") !== -1) {
+            return "macos";
+        }
+        return "linux"
+    ]]></property-provider>
+
+    <define-property name="gwt.browser" values="firefox,chromium,safari,edge"/>
+    <property-provider name="gwt.browser"><![CDATA[
+        // Detect from user agent.
+        var ua = navigator.userAgent.toLowerCase();
+        if(ua.indexOf("firefox") !== -1) {
+           return "firefox";
+        }
+        else if(ua.indexOf("edg") !== -1) {
+            return "edge";
+        }
+        else if(ua.indexOf("chrome") !== -1) {
+            return "chromium"
+        }
+        else if(ua.indexOf("safari") !== -1) {
+            return "safari";
+        }
+        return "chromium";
+    ]]></property-provider>
+
+</module>
