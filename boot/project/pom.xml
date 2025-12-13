@@ -16,7 +16,7 @@
 
     <properties>
         <spring.version>3.4.4</spring.version>
-        <gwt.version>2.12.3</gwt.version>
+        <gwtboot.version>1.0.0</gwtboot.version>
         <gwt.codeserver.path>${project.basedir}/../gwt-${gwt.version}/gwt-codeserver.jar</gwt.codeserver.path>
         <start-class>com.example.Project.Application</start-class>
         <pdfbox.version>3.0.2</pdfbox.version>
@@ -34,9 +34,9 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.gwtproject</groupId>
-                <artifactId>gwt</artifactId>
-                <version>${gwt.version}</version>
+                <groupId>com.edusoftwerks</groupId>
+                <artifactId>gwt-boot</artifactId>
+                <version>${gwtboot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -90,7 +90,7 @@
         <dependency>
             <groupId>org.gwtproject</groupId>
             <artifactId>gwt-dev</artifactId>
-            <version>${gwt.version}</version>
+            <version>${gwtboot.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -98,7 +98,7 @@
         <dependency>
             <groupId>org.gwtproject</groupId>
             <artifactId>gwt-servlet-jakarta</artifactId>
-            <version>${gwt.version}</version>
+            <version>${gwtboot.version}</version>
         </dependency>
 
         <!-- Apache Crypto -->

@@ -1,6 +1,6 @@
 all:
 	sudo rm -rf target
-	cd cli-tool; sudo rm -rf target; sudo sh install.sh
+	cd cli-tool; rm -rf target; sh install.sh
 
 clean:
 	sudo rm -rf target
