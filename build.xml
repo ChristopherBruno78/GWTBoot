@@ -49,7 +49,7 @@
   </target>
 
   <target name="dist-dev" depends="buildonly"
-          description="[action] Make this platform's distribution, minus doc and samples">
+          description="[action] Make this platform's distribution, minus docs">
     <gwt.ant dir="distro-source" target="build"/>
   </target>
 
@@ -92,26 +92,11 @@
     <gwt.ant dir="doc"/>
   </target>
 
-  <target name="samples" description="[subdir] Builds (or runs ${target} if set) the samples">
-    <call-subproject subproject="user" subtarget="build"/>
-    <call-subproject subproject="codeserver" subtarget="build"/>
-    <gwt.ant dir="samples"/>
-  </target>
-
   <target name="buildtools" description="[subdir] Build (or runs ${target} if set) the build tools">
     <gwt.ant dir="build_tools"/>
   </target>
 
-  <target name="build"
-          description="[action] Builds GWT, including samples, but without distro packaging">
-    <call-subproject subproject="dev" subtarget="build"/>
-    <call-subproject subproject="user" subtarget="build"/>
-    <call-subproject subproject="codeserver" subtarget="build"/>
-    <call-subproject subproject="requestfactory" subtarget="build"/>
-    <call-subproject subproject="servlet" subtarget="build"/>
-    <call-subproject subproject="tools" subtarget="build"/>
-    <call-subproject subproject="samples" subtarget="build"/>
-  </target>
+
 
   <target name="checkstyle" description="[action] Does static analysis of GWT source">
     <call-subproject subproject="buildtools" subtarget="checkstyle"/>
@@ -123,7 +108,6 @@
     <!-- servlet needed for tools/benchmark-viewer -->
     <call-subproject subproject="servlet" subtarget="build"/>
     <call-subproject subproject="tools" subtarget="checkstyle"/>
-    <call-subproject subproject="samples" subtarget="checkstyle"/>
   </target>
 
   <target name="compile.tests" description="[action] Compile all the GWT tests, without running them">
