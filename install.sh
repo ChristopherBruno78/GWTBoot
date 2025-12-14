@@ -60,16 +60,14 @@ function maven-deploy-file() {
     return 1
   fi
 
-  local cmd="";
-  if [[ "$mavenRepoUrl" == "install" ]]; then
-    echo "Installing $curFile into local maven repository cache"
-    cmd="$MAVEN_BIN \
-           install:install-file
-            -Dfile=$curFile \
-            -DpomFile=$pomFile \
-            $javadoc \
-            $sources \
-            -q"
+  echo "Installing $curFile into local maven repository cache"
+  local cmd="$MAVEN_BIN \
+             install:install-file
+              -Dfile=$curFile \
+              -DpomFile=$pomFile \
+              $javadoc \
+              $sources \
+              -q"
   eval $cmd
 }
 
