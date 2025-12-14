@@ -42,6 +42,7 @@
     <call-subproject subproject="codeserver" subtarget="build"/>
     <call-subproject subproject="requestfactory" subtarget="build"/>
     <call-subproject subproject="servlet" subtarget="build"/>
+    <antcall target="gwt-boot-cli" />
   </target>
 
   <target name="dist" depends="build, doc" description="[action] Make all the distributions">
@@ -51,6 +52,45 @@
   <target name="dist-dev" depends="buildonly"
           description="[action] Make this platform's distribution, minus docs">
     <gwt.ant dir="distro-source" target="build"/>
+
+    <!-- Collect distribution files -->
+    <property name="dist.dir" location="${gwt.root}/dist"/>
+    <property name="resources.dir" location="${dist.dir}/resources"/>
+    <delete dir="${dist.dir}"/>
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${resources.dir}"/>
+
+    <!-- Copy GWT Boot zip to resources -->
+    <copy todir="${resources.dir}">
+      <fileset dir="${gwt.build}/dist">
+        <include name="gwt-*.zip"/>
+      </fileset>
+    </copy>
+
+    <!-- Copy gwt-boot-cli.jar to resources -->
+    <copy file="${gwt.root}/boot/cli-tool/target/gwt-boot-cli.jar"
+          todir="${resources.dir}"/>
+
+    <!-- Copy gwt-boot wrapper to resources -->
+    <copy file="${gwt.root}/boot/cli-tool/gwt-boot"
+          todir="${resources.dir}"/>
+
+    <!-- Copy poms folder to resources -->
+    <copy todir="${resources.dir}/poms">
+      <fileset dir="${gwt.root}/maven/poms"/>
+    </copy>
+
+    <!-- Zip the resources folder -->
+    <zip destfile="${dist.dir}/gwt-boot.zip" basedir="${resources.dir}"/>
+
+    <!-- Remove the resources folder after zipping -->
+    <delete dir="${resources.dir}"/>
+
+    <!-- Copy install.sh to dist root -->
+    <copy file="${gwt.root}/install.sh"
+          todir="${dist.dir}"/>
+
+    <echo message="Distribution files collected in ${dist.dir}"/>
   </target>
 
   <target name="dev" description="[subdir] Builds (or runs ${target} if set) all the dev libraries">
@@ -96,7 +136,13 @@
     <gwt.ant dir="build_tools"/>
   </target>
 
-
+    <target name="gwt-boot-cli" description="Build GWT Boot CLI">
+        <exec executable="mvn"  dir="boot/cli-tool/" failonerror="true">
+            <arg value="-Drevision=${gwt.version}" />
+            <arg value="clean" />
+            <arg value="package" />
+        </exec>
+    </target>
 
   <target name="checkstyle" description="[action] Does static analysis of GWT source">
     <call-subproject subproject="buildtools" subtarget="checkstyle"/>
@@ -210,5 +256,9 @@
 
   <target name="apicheck" depends="buildonly,tools,apicheck-nobuild"
           description="[action] Builds GWT and checks API compatiblity to prior release"/>
+
+
+
+
 
 </project>

@@ -3,9 +3,9 @@ all:
 
 install:
 	maven/push-gwtproject.sh
-	cd boot; make
 
 clean:
 	rm -rf build
+	rm -rf dist
 	rm -rf boot/target
 	rm -rf boot/cli-tool/target

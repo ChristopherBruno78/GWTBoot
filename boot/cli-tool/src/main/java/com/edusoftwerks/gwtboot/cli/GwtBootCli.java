@@ -8,16 +8,28 @@ import java.util.concurrent.Callable;
 
 @Command(
     name = "gwt-boot",
-    version = "1.0.0",
     description = "GWT Boot CLI - Unified command-line tool for GWT Boot projects",
     mixinStandardHelpOptions = true,
+    versionProvider = GwtBootCli.VersionProvider.class,
     subcommands = {
         BootCommand.class,
         ActivityCommand.class,
-        ServiceCommand.class
+        ServiceCommand.class,
+        UninstallCommand.class
     }
 )
 public class GwtBootCli implements Callable<Integer> {
+
+    private static String versionInfo ="GWT Boot CLI version " + PomUtils.getVersion();
+
+    static class VersionProvider implements CommandLine.IVersionProvider {
+        @Override
+        public String[] getVersion() {
+            return new String[] {
+               versionInfo
+            };
+        }
+    }
 
     public static void main(String[] args) {
         int exitCode = new CommandLine(new GwtBootCli()).execute(args);
@@ -26,7 +38,7 @@ public class GwtBootCli implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        Console.info("GWT Boot CLI - Version 1.0.0");
+        Console.info(versionInfo);
         Console.info("");
         Console.info("Usage: gwt-boot <command> [options]");
         Console.info("");
@@ -34,6 +46,7 @@ public class GwtBootCli implements Callable<Integer> {
         Console.info("  boot <artifactId>    Generate a new GWT Boot project from archetype");
         Console.info("  activity <name>      Create a new activity in the current project");
         Console.info("  service <name>       Create a new GWT RPC service in the current project");
+        Console.info("  uninstall            Uninstall GWT Boot CLI from your system");
         Console.info("  help                 Show this help message");
         Console.info("  version              Show version information");
         Console.info("");

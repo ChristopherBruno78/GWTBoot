@@ -8,3 +8,4 @@
 /maven/poms/**/pom.xml
 /boot/cli-tool/target/
 /boot/target/
+/dist/

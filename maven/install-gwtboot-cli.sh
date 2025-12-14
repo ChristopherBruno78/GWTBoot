@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # GWT Boot CLI Installer
 # Installs the Java CLI tool and wrapper scripts for Linux, macOS, and Windows
 
@@ -34,11 +32,7 @@ print_info "GWT Boot CLI Installer"
 print_info "==================================="
 echo ""
 
-# Check if running from correct directory
-if [ ! -f "pom.xml" ]; then
-    print_error "Installation must be run from the cli-tool directory"
-    exit 1
-fi
+cd ../boot/
 
 # Detect OS
 OS="unknown"
@@ -57,7 +51,6 @@ echo ""
 print_info "Installing GWT Boot archetype to Maven repository..."
 echo ""
 
-cd ..
 mvn clean install
 
 if [ $? -ne 0 ]; then
@@ -66,23 +59,12 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+
 echo ""
 print_success "Archetype installed to Maven repository"
 echo ""
 
 cd cli-tool
-
-# Build the CLI JAR
-print_info "Building GWT Boot CLI JAR..."
-echo ""
-
-mvn clean package
-
-if [ $? -ne 0 ]; then
-    echo ""
-    print_error "Failed to build GWT Boot CLI"
-    exit 1
-fi
 
 JAR_FILE="target/gwt-boot-cli.jar"
 if [ ! -f "$JAR_FILE" ]; then
@@ -245,3 +227,4 @@ else
     echo "Please add $BIN_DIR to your PATH to use gwt-boot"
 fi
 echo ""
+cd ../..

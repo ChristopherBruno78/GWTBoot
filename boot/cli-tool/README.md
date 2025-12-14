@@ -40,15 +40,45 @@ The CLI tool can be installed globally for easy access from anywhere on your sys
 
 ### Linux / macOS
 
+#### Quick Install (from URL)
+
+If the files are hosted on a server, you can install directly:
+
 ```bash
+# Download and run install script
+curl -fsSL https://your-server.com/path/to/install.sh | bash
+```
+
+Or download both files first:
+
+```bash
+# Download JAR and install script
+wget https://your-server.com/path/to/gwt-boot-cli.jar
+wget https://your-server.com/path/to/install.sh
+chmod +x install.sh
 ./install.sh
 ```
 
-This will:
-- Install the GWT Boot archetype to your local Maven repository (`~/.m2/repository/`)
-- Build the CLI JAR file
-- Install JAR to `/usr/local/lib/gwt-boot/` (system-wide) or `~/.local/lib/gwt-boot/` (user-local)
-- Create a shell script wrapper in `/usr/local/bin/` or `~/.local/bin/`
+#### Local Install
+
+If you've built the project locally:
+
+```bash
+# Build the project first
+mvn clean package
+
+# Copy JAR to cli-tool directory
+cp target/gwt-boot-cli.jar .
+
+# Run install script
+./install.sh
+```
+
+The install script will:
+- Detect if you have sudo privileges
+- Offer to install system-wide to `/usr/local/lib/gwt-boot/` and `/usr/local/bin/` (requires sudo)
+- Otherwise install to `~/.local/lib/gwt-boot/` and `~/.local/bin/` (user-local)
+- Create an executable wrapper script for easy access
 
 If installed to user-local directory, you may need to add to your PATH:
 
@@ -100,6 +130,26 @@ gwt-boot activity dashboard
 gwt-boot service UserAuth
 ```
 
+### Uninstalling
+
+To uninstall GWT Boot CLI from your system:
+
+```bash
+gwt-boot uninstall
+```
+
+This will:
+- Detect all installed instances (system-wide and user-local)
+- Show which files will be removed
+- Ask for confirmation before deleting
+- Remove the JAR file and wrapper scripts
+
+You can skip the confirmation prompt with:
+
+```bash
+gwt-boot uninstall -y
+```
+
 ## Commands
 
 ### boot [artifactId]
@@ -143,6 +193,19 @@ Creates:
 - Service interface
 - Async service interface
 - Service implementation
+
+### uninstall
+
+Uninstall GWT Boot CLI from your system.
+
+```bash
+gwt-boot uninstall
+```
+
+Options:
+- `-y, --yes`: Skip confirmation prompt
+
+This command will detect and remove all installed instances of the CLI tool from your system, including both system-wide and user-local installations.
 
 ## Requirements
 

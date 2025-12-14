@@ -15,6 +15,7 @@ pushd $(dirname $0) >/dev/null 2>&1
 
 export pomDir=./poms
 
+
 source lib-gwt.sh
 
 # use GWT_MAVEN_REPO_URL if set else M2_REPO else default location for local repo
@@ -70,3 +71,10 @@ maven-gwt "$gwtVersion" \
           "$repoId"
 
 popd >/dev/null 2>&1
+
+cd maven
+source install-gwtboot-cli.sh
+
+
+
+
