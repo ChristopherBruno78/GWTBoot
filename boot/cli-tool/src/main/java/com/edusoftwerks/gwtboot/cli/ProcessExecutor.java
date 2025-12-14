@@ -8,6 +8,8 @@ import java.util.List;
 
 public class ProcessExecutor {
 
+    private static String archetypeVersion = "1.0.0";
+
     public static int executeMavenArchetype(
             String groupId,
             String artifactId,
@@ -20,7 +22,7 @@ public class ProcessExecutor {
         command.add("archetype:generate");
         command.add("-DarchetypeGroupId=com.edusoftwerks");
         command.add("-DarchetypeArtifactId=gwt-boot-archetype");
-        command.add("-DarchetypeVersion=1.0.0");
+        command.add("-DarchetypeVersion=" + archetypeVersion);
         command.add("-DgroupId=" + groupId);
         command.add("-DartifactId=" + artifactId);
         command.add("-Dversion=" + version);

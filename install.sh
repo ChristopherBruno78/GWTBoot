@@ -256,6 +256,15 @@ if [ -f "$SCRIPT_DIR/gwt-boot.zip" ]; then
   echo "Extracting gwt-boot..."
   unzip -q "$SCRIPT_DIR/gwt-boot.zip" -d "$SCRIPT_DIR/gwt-boot"
   echo ""
+
+  # Build the boot project
+  if [ -d "$SCRIPT_DIR/gwt-boot/boot" ]; then
+    echo "Building boot project..."
+    cd "$SCRIPT_DIR/gwt-boot/boot"
+    mvn clean install
+    cd "$SCRIPT_DIR"
+    echo ""
+  fi
 fi
 
 export pomDir=$SCRIPT_DIR/gwt-boot/poms

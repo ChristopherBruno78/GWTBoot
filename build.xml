@@ -80,6 +80,13 @@
       <fileset dir="${gwt.root}/maven/poms"/>
     </copy>
 
+    <!-- Copy boot folder to resources, excluding cli-tool -->
+    <copy todir="${resources.dir}/boot">
+      <fileset dir="${gwt.root}/boot">
+        <exclude name="cli-tool/**"/>
+      </fileset>
+    </copy>
+
     <!-- Zip the resources folder -->
     <zip destfile="${dist.dir}/gwt-boot.zip" basedir="${resources.dir}"/>
 
