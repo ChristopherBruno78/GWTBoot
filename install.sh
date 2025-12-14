@@ -257,7 +257,7 @@ if [ -f "$SCRIPT_DIR/gwt-boot.zip" ]; then
   unzip -q "$SCRIPT_DIR/gwt-boot.zip" -d "$SCRIPT_DIR/gwt-boot"
   echo ""
 
-  # Build the boot project
+  # Build the boot project archetype
   if [ -d "$SCRIPT_DIR/gwt-boot/boot" ]; then
     echo "Building boot project..."
     cd "$SCRIPT_DIR/gwt-boot/boot"
