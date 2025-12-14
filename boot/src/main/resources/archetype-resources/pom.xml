@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
+        <artifactId>spring-boot-starter-parent</artifactId>s
         <version>3.5.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
@@ -16,20 +16,18 @@
 
     <properties>
         <spring.version>3.4.4</spring.version>
-        <gwt.version>2.12.3</gwt.version>
-        <gwt.codeserver.path>${project.basedir}/../gwt-${gwt.version}/gwt-codeserver.jar</gwt.codeserver.path>
-        <start-class>${package}.Application</start-class>
+        <gwtboot.version>2.12.3</gwtboot.version>
+        <start-class>${groupId}.${artifactId}.Application</start-class>
         <pdfbox.version>3.0.2</pdfbox.version>
         <apache.crypto.version>1.17.2</apache.crypto.version>
         <elemental2.version>1.3.1</elemental2.version>
         <junit.version>4.13.1</junit.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <plugin.maven.compiler.version>3.13.0</plugin.maven.compiler.version>
         <plugin.prettier.version>0.22</plugin.prettier.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
-        <plugin.gwt.version>1.1.0</plugin.gwt.version>
     </properties>
 
     <dependencyManagement>
@@ -37,7 +35,7 @@
             <dependency>
                 <groupId>org.gwtproject</groupId>
                 <artifactId>gwt</artifactId>
-                <version>${gwt.version}</version>
+                <version>${gwtboot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -91,6 +89,7 @@
         <dependency>
             <groupId>org.gwtproject</groupId>
             <artifactId>gwt-dev</artifactId>
+            <version>${gwtboot.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -98,17 +97,8 @@
         <dependency>
             <groupId>org.gwtproject</groupId>
             <artifactId>gwt-servlet-jakarta</artifactId>
-            <version>${gwt.version}</version>
+            <version>${gwtboot.version}</version>
         </dependency>
-
-        <!-- Mosaic - Comment out if not available -->
-
-        <dependency>
-            <groupId>com.edusoftwerks</groupId>
-            <artifactId>Mosaic</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
 
         <!-- Apache Crypto -->
         <dependency>
@@ -125,7 +115,6 @@
         </dependency>
 
         <!-- PDFBox -->
-
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
@@ -200,6 +189,5 @@
         </plugins>
 
     </build>
-
 
 </project>

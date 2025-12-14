@@ -30,5 +30,4 @@
   <inherits name="com.google.gwt.user.Timer"/>
   <inherits name="com.google.gwt.user.UI"/>
   <inherits name="com.google.gwt.user.Window" />
-  <inherits name="com.google.gwt.mvp.MVP"  />
 </module>

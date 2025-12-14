@@ -35,7 +35,7 @@ fi
 VERSION_REGEX='[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*-*.*'
 
 # use GWT_VERSION to specify the default version or get it from the file name
-gwtVersionDefault=${GWT_VERSION:=$(expr "$gwtPathDefault" : '.*gwt-boot-\('$VERSION_REGEX'\)\.zip')}
+gwtVersionDefault=${GWT_VERSION:=$(expr "$gwtPathDefault" : '.*gwt-\('$VERSION_REGEX'\)\.zip')}
 
 # prompt for info
 read -e -p"GWT version for Maven (${gwtVersionDefault:-ex: HEAD-SNAPSHOT}): " gwtVersion

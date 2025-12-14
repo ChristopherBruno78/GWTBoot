@@ -132,9 +132,7 @@ public abstract class DOMImpl {
   }-*/;
 
   public native DOMRect getBoundingClientRect(Element element) /*-{
-        var rect = element.getBoundingClientRect();
-        return @com.edusoftwerks.gwt.mosaic.widgets.shared.geometry.Rectangle::new(DDDD)(
-            rect.left, rect.top, rect.width, rect.height);
+        return element.getBoundingClientRect();
    }-*/;
 
   public native boolean isFocusable(Element element) /*-{

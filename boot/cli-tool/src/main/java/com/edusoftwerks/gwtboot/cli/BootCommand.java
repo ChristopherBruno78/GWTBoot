@@ -26,6 +26,7 @@ public class BootCommand implements Callable<Integer> {
         Console.info("===================================");
         Console.println("");
 
+
         // Prompt for groupId
         String groupId = InputReader.readLine("Enter groupId (e.g., com.mycompany): ");
         if (groupId == null || groupId.trim().isEmpty()) {
@@ -44,6 +45,8 @@ public class BootCommand implements Callable<Integer> {
             artifactId = artifactId.trim();
         }
 
+        artifactId = artifactId.toLowerCase();
+
         // Prompt for version (with default)
         String version = InputReader.readLineWithDefault(
             "Enter version (default: 0.0.1-SNAPSHOT): ",
@@ -51,7 +54,7 @@ public class BootCommand implements Callable<Integer> {
         );
 
         // Prompt for package (with default derived from groupId.artifactId)
-        String defaultPackage = groupId + "." + artifactId.toLowerCase();
+        String defaultPackage = groupId + "." + artifactId;
         String packageName = InputReader.readLineWithDefault(
             "Enter package name (default: " + defaultPackage + "): ",
             defaultPackage
