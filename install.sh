@@ -140,12 +140,12 @@ function maven-gwt() {
 
   # Auto-detect zip file if not specified
   if [[ "$gwtSdkArchive" == "" ]]; then
-    local ZIP_FILES=($SCRIPT_DIR/resources/*.zip)
+    local ZIP_FILES=($SCRIPT_DIR/gwt-boot/*.zip)
     if [[ -f "${ZIP_FILES[0]}" ]]; then
       gwtSdkArchive="${ZIP_FILES[0]}"
       echo "Auto-detected GWT SDK archive: $gwtSdkArchive"
     else
-      echo "ERROR: No zip file found in $SCRIPT_DIR/resources and gwtSdkArchive not specified"
+      echo "ERROR: No zip file found in $SCRIPT_DIR/gwt-boot and gwtSdkArchive not specified"
       exit 1
     fi
   fi
@@ -251,23 +251,23 @@ function maven-gwt() {
 echo -e "${BLUE}GWT Boot Installer${NC}"
 echo ""
 
-# Extract resources if they are zipped
+# Extract gwt-boot
 if [ -f "$SCRIPT_DIR/gwt-boot.zip" ]; then
-  echo "Extracting resources..."
-  unzip -q "$SCRIPT_DIR/gwt-boot.zip" -d "$SCRIPT_DIR/resources"
+  echo "Extracting gwt-boot..."
+  unzip -q "$SCRIPT_DIR/gwt-boot.zip" -d "$SCRIPT_DIR/gwt-boot"
   echo ""
 fi
 
-export pomDir=$SCRIPT_DIR/resources/poms
+export pomDir=$SCRIPT_DIR/gwt-boot/poms
 
 # Step 1: Install GWT SDK to Maven
 echo -e "${BLUE}Step 1: Installing GWT SDK to Maven repository${NC}"
 echo ""
 
 # Auto-detect zip file
-ZIP_FILES=($SCRIPT_DIR/resources/*.zip)
+ZIP_FILES=($SCRIPT_DIR/gwt-boot/*.zip)
 if [[ ! -f "${ZIP_FILES[0]}" ]]; then
-  echo -e "${RED}ERROR: No GWT SDK zip file found in $SCRIPT_DIR/resources${NC}"
+  echo -e "${RED}ERROR: No GWT SDK zip file found in $SCRIPT_DIR/gwt-boot${NC}"
   exit 1
 fi
 
@@ -301,7 +301,7 @@ echo ""
 echo -e "${BLUE}Step 2: Installing GWT Boot CLI${NC}"
 echo ""
 
-JAR_FILE="$SCRIPT_DIR/resources/gwt-boot-cli.jar"
+JAR_FILE="$SCRIPT_DIR/gwt-boot/gwt-boot-cli.jar"
 
 # Check if JAR file exists
 if [ ! -f "$JAR_FILE" ]; then
