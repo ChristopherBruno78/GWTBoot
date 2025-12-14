@@ -70,30 +70,6 @@ function maven-deploy-file() {
             $javadoc \
             $sources \
             -q"
-  elif [[ "$gpgPassphrase" != "" ]]; then
-    echo "Signing and Deploying $curFile to $mavenRepoUrl"
-    cmd="$MAVEN_BIN \
-           org.apache.maven.plugins:maven-gpg-plugin:1.4:sign-and-deploy-file \
-            -Dfile=$curFile \
-            -Durl=$mavenRepoUrl \
-            -DrepositoryId=$mavenRepoId \
-            -DpomFile=$pomFile \
-            $javadoc \
-            $sources \
-            -q \
-            -Dgpg.passphrase=\"$gpgPassphrase\""
-  else
-    echo "GPG passphrase not specified; will attempt to deploy files without signing"
-    cmd="$MAVEN_BIN \
-           org.apache.maven.plugins:maven-deploy-plugin:2.7:deploy-file \
-            -Dfile=$curFile \
-            -Durl=$mavenRepoUrl \
-            -DrepositoryId=$mavenRepoId \
-            -DpomFile=$pomFile \
-            $javadoc \
-            $sources \
-            -q"
-  fi
   eval $cmd
 }
 
