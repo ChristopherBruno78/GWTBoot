@@ -257,7 +257,7 @@ public class BootCommand implements Callable<Integer> {
                 <option name="VM_PARAMETERS" value="-Xmx2048m -Dgwt.persistentunitcachedir=target" />
                 <option name="SHELL_PARAMETERS" value="-noserver -war target/classes/static" />
                 <option name="USE_SUPER_DEV_MODE" value="true" />
-                <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+                <option name="WORKING_DIRECTORY" value="$ContentRoot$" />
                 <module name="%s" />
                 <method v="2">
                   <option name="Make" enabled="true" />
