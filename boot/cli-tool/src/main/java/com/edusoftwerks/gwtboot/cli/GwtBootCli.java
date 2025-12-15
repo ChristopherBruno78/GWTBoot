@@ -44,7 +44,7 @@ public class GwtBootCli implements Callable<Integer> {
         Console.info("Usage: gwt-boot <command> [options]");
         Console.info("");
         Console.info("Commands:");
-        Console.info("  boot <artifactId>    Generate a new GWT Boot project from archetype");
+        Console.info("  boot <appName>       Generate a new GWT Boot project from archetype");
         Console.info("  activity <name>      Create a new activity in the current project");
         Console.info("  service <name>       Create a new GWT RPC service in the current project");
         Console.info("  run [-m <mb>]        Launch GWT CodeServer and Spring Boot for development");
@@ -53,7 +53,7 @@ public class GwtBootCli implements Callable<Integer> {
         Console.info("  version              Show version information");
         Console.info("");
         Console.info("Examples:");
-        Console.info("  gwt-boot boot myapp");
+        Console.info("  gwt-boot boot MyApp");
         Console.info("  gwt-boot activity dashboard");
         Console.info("  gwt-boot service UserAuth");
         Console.info("  gwt-boot run");

@@ -12,7 +12,6 @@
     <artifactId>${artifactId}</artifactId>
     <version>${version}</version>
     <name>${artifactId}</name>
-    <description>${artifactId}</description>
 
     <properties>
         <spring.version>3.4.4</spring.version>
