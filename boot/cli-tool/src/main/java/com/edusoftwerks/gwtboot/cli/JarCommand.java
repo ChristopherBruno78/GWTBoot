@@ -21,6 +21,9 @@ public class JarCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"-m", "--memory"}, description = "Maximum heap size in MB (default: ${DEFAULT-VALUE})", defaultValue = "2048")
     private int maxMemoryMb;
 
+    @CommandLine.Option(names = {"-w", "--workers"}, description = "Number of local workers for parallel compilation (default: ${DEFAULT-VALUE})", defaultValue = "2")
+    private int workers;
+
     @Override
     public Integer call() throws Exception {
         Console.info("===================================");
@@ -139,6 +142,8 @@ public class JarCommand implements Callable<Integer> {
         command.add("OBFUSCATED");
         command.add("-optimize");
         command.add("9");
+        command.add("-localWorkers");
+        command.add(String.valueOf(workers));
         command.add("-extra");
         command.add("target/extra");
         command.add("-compileReport");
