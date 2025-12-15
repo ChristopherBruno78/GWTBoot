@@ -5,7 +5,7 @@
 
 GWT_BOOT_URL="https://gwtboot.cocoawerks.com"
 
-wget -r -nH -x ${GWT_BOOT_URL}/gwt-boot.zip
+curl -O ${GWT_BOOT_URL}/gwt-boot.zip
 
 set -e
 
