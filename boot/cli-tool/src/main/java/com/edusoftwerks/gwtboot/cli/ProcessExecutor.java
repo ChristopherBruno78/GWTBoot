@@ -54,4 +54,25 @@ public class ProcessExecutor {
 
         executeCommand(command);
     }
+
+    public static Process executeCommandInBackground(List<String> command, String logFile) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.redirectErrorStream(true);
+
+        if (logFile != null) {
+            pb.redirectOutput(ProcessBuilder.Redirect.appendTo(new java.io.File(logFile)));
+        } else {
+            pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+        }
+
+        return pb.start();
+    }
+
+    public static Process executeCommandInBackgroundWithOutput(List<String> command) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.redirectErrorStream(true);
+        pb.inheritIO();
+
+        return pb.start();
+    }
 }

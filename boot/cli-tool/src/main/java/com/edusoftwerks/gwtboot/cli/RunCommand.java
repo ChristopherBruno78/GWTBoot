@@ -1,0 +1,336 @@
+package com.edusoftwerks.gwtboot.cli;
+
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
+@Command(
+    name = "run",
+    description = "Launch the GWT CodeServer for development",
+    mixinStandardHelpOptions = true
+)
+public class RunCommand implements Callable<Integer> {
+
+    @Option(names = {"-m", "--memory"}, description = "Maximum heap size in MB (default: ${DEFAULT-VALUE})", defaultValue = "2048")
+    private int maxMemoryMb;
+
+    @Override
+    public Integer call() throws Exception {
+        Console.info("===================================");
+        Console.info("Starting GWT CodeServer");
+        Console.info("===================================");
+        Console.println("");
+
+        // Check if CodeServer is already running
+        Path pidFile = Paths.get("target/gwt-codeserver.pid");
+        if (Files.exists(pidFile)) {
+            try {
+                String pidString = Files.readString(pidFile).trim();
+                long pid = Long.parseLong(pidString);
+
+                // Check if process is still running
+                if (isProcessRunning(pid)) {
+                    Console.error("GWT CodeServer is already running (PID: " + pid + ")");
+                    Console.error("Stop it first using: kill -9 " + pid);
+                    return 1;
+                }
+
+                // PID file exists but process is dead, clean it up
+                Files.delete(pidFile);
+                Console.info("Cleaned up stale CodeServer PID file");
+            } catch (NumberFormatException | IOException e) {
+                // Invalid or unreadable PID file, delete it
+                try {
+                    Files.delete(pidFile);
+                } catch (IOException ex) {
+                    // Ignore
+                }
+            }
+        }
+
+        // Check if pom.xml exists in current directory
+        Path pomPath = Paths.get("pom.xml");
+        if (!Files.exists(pomPath)) {
+            Console.error("No pom.xml found in current directory");
+            Console.error("Please run this command from your GWT Boot project root");
+            return 1;
+        }
+
+        // Extract GWT version from pom.xml
+        String gwtVersion = extractGwtVersionFromPom(pomPath);
+        if (gwtVersion == null) {
+            Console.error("Could not determine GWT version from pom.xml");
+            return 1;
+        }
+
+        Console.info("Using GWT version: " + gwtVersion);
+
+        // Find all GWT modules
+        List<String> moduleNames = findGwtModules();
+        if (moduleNames.isEmpty()) {
+            Console.error("Could not find any GWT modules (*.gwt.xml) in src/main/java");
+            return 1;
+        }
+
+        Console.info("Found " + moduleNames.size() + " GWT module(s):");
+        for (String module : moduleNames) {
+            Console.info("  - " + module);
+        }
+        Console.println("");
+
+        // Build classpath
+        String classpath = buildClasspath(gwtVersion);
+        if (classpath == null) {
+            Console.error("Could not find gwt-codeserver jar in Maven repository");
+            Console.error("Please ensure GWT is installed in your local Maven repository");
+            return 1;
+        }
+
+        Console.info("Max heap memory: " + maxMemoryMb + "MB");
+        Console.info("Launching GWT CodeServer (SuperDevMode) in background...");
+        Console.println("");
+        Console.println("=== GWT CodeServer Output ===");
+        Console.println("");
+
+        Process process = executeGwtCodeServer(classpath, moduleNames, maxMemoryMb);
+        long pid = process.pid();
+
+        // Give the CodeServer a moment to start
+        Thread.sleep(2000);
+
+        // Check if process died immediately
+        if (!process.isAlive()) {
+            Console.println("");
+            Console.error("GWT CodeServer failed to start!");
+            Console.error("Check the error messages above for details");
+            return 1;
+        }
+
+        // Save the PID for later reference
+        pidFile = Paths.get("target/gwt-codeserver.pid");
+        Files.createDirectories(pidFile.getParent());
+        Files.writeString(pidFile, String.valueOf(pid));
+
+        Console.println("");
+        Console.println("=============================");
+        Console.println("");
+        Console.success("GWT CodeServer started successfully!");
+        Console.info("CodeServer URL: http://localhost:9876/");
+        Console.info("Process ID: " + pid);
+        Console.println("");
+
+        // Add shutdown hook to clean up CodeServer if interrupted
+        final Process codeServerProcess = process;
+        final Path codeServerPidFile = pidFile;
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                if (codeServerProcess.isAlive()) {
+                    codeServerProcess.destroyForcibly();
+                }
+                if (Files.exists(codeServerPidFile)) {
+                    Files.delete(codeServerPidFile);
+                }
+            } catch (Exception e) {
+                // Ignore exceptions during shutdown
+            }
+        }));
+
+        // Start Spring Boot (runs in foreground, blocking)
+        Console.info("Starting Spring Boot application...");
+        Console.info("Press Ctrl+C to stop both services");
+        Console.println("");
+        Console.println("=== Spring Boot Output ===");
+        Console.println("");
+
+        int exitCode = executeSpringBoot();
+
+        // When Spring Boot stops, also stop the GWT CodeServer
+        Console.println("");
+        Console.info("Spring Boot stopped (exit code: " + exitCode + ")");
+        Console.info("Stopping GWT CodeServer...");
+
+        // Kill the CodeServer process
+        if (process.isAlive()) {
+            process.destroyForcibly();
+            Console.success("GWT CodeServer stopped");
+        }
+
+        // Clean up PID files
+        if (Files.exists(pidFile)) {
+            Files.delete(pidFile);
+        }
+
+        Console.println("");
+        Console.success("All services stopped");
+        Console.println("");
+
+        return exitCode;
+    }
+
+    private String extractGwtVersionFromPom(Path pomPath) throws IOException {
+        String content = Files.readString(pomPath);
+
+        // Look for gwt.version property
+        Pattern pattern = Pattern.compile("<gwt\\.version>([^<]+)</gwt\\.version>");
+        Matcher matcher = pattern.matcher(content);
+
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+
+        return null;
+    }
+
+    private List<String> findGwtModules() throws IOException {
+        List<String> modules = new ArrayList<>();
+        Path srcMainJava = Paths.get("src/main/java");
+
+        if (!Files.exists(srcMainJava)) {
+            return modules;
+        }
+
+        try (Stream<Path> paths = Files.walk(srcMainJava)) {
+            paths
+                .filter(Files::isRegularFile)
+                .filter(p -> p.toString().endsWith(".gwt.xml"))
+                .forEach(path -> {
+                    // Convert file path to module name
+                    // e.g., src/main/java/com/example/App.gwt.xml -> com.example.App
+                    String relativePath = srcMainJava.relativize(path).toString();
+                    String moduleName = relativePath.replace('/', '.')
+                                                     .replace('\\', '.')
+                                                     .replace(".gwt.xml", "");
+                    modules.add(moduleName);
+                });
+        }
+
+        return modules;
+    }
+
+    private String buildClasspath(String gwtVersion) throws IOException, InterruptedException {
+        String pathSeparator = System.getProperty("path.separator");
+        List<String> classpathEntries = new ArrayList<>();
+
+        // Use Maven to build the complete classpath including all transitive dependencies
+        Console.info("Building classpath from Maven dependencies...");
+        String mavenClasspath = getMavenClasspath();
+
+        if (mavenClasspath != null && !mavenClasspath.isEmpty()) {
+            // Add Maven-resolved dependencies
+            String[] mavenJars = mavenClasspath.split(pathSeparator);
+            for (String jar : mavenJars) {
+                if (!jar.trim().isEmpty()) {
+                    classpathEntries.add(jar.trim());
+                }
+            }
+        } else {
+            Console.error("Failed to build classpath from Maven");
+            return null;
+        }
+
+        // Add project's source and compiled classes
+        classpathEntries.add("src/main/java");
+        classpathEntries.add("target/classes");
+
+        return String.join(pathSeparator, classpathEntries);
+    }
+
+    private String getMavenClasspath() throws IOException, InterruptedException {
+        // Ensure target directory exists
+        Files.createDirectories(Paths.get("target"));
+
+        List<String> command = new ArrayList<>();
+        command.add("mvn");
+        command.add("dependency:build-classpath");
+        command.add("-DincludeScope=test");  // test scope includes compile, runtime, and provided
+        command.add("-Dmdep.outputFile=target/classpath.txt");
+
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.inheritIO();
+        Process process = pb.start();
+        int exitCode = process.waitFor();
+
+        if (exitCode != 0) {
+            Console.warning("Maven dependency:build-classpath failed with exit code " + exitCode);
+            return null;
+        }
+
+        // Read the classpath from the output file
+        Path classpathFile = Paths.get("target/classpath.txt");
+        if (Files.exists(classpathFile)) {
+            String classpath = Files.readString(classpathFile).trim();
+            // Don't delete - keep for debugging
+            return classpath;
+        }
+
+        Console.warning("Classpath file not found at target/classpath.txt");
+        return null;
+    }
+
+
+    private Process executeGwtCodeServer(String classpath, List<String> moduleNames, int maxMemoryMb) throws IOException {
+        List<String> command = new ArrayList<>();
+        command.add("java");
+        command.add("-Xmx" + maxMemoryMb + "m");
+        command.add("-Dgwt.persistentunitcachedir=target");
+        command.add("-cp");
+        command.add(classpath);
+        command.add("com.google.gwt.dev.codeserver.CodeServer");
+        command.add("-src");
+        command.add("src/main/java");
+        command.add("-launcherDir");
+        command.add("target/classes/static");
+        command.add("-sourceLevel");
+        command.add("17");
+        command.add("-logLevel");
+        command.add("INFO");
+
+        // Add all module names to the command
+        command.addAll(moduleNames);
+
+        return ProcessExecutor.executeCommandInBackgroundWithOutput(command);
+    }
+
+    private boolean isProcessRunning(long pid) {
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+            ProcessBuilder pb;
+
+            if (os.contains("win")) {
+                // Windows: tasklist /FI "PID eq <pid>"
+                pb = new ProcessBuilder("tasklist", "/FI", "PID eq " + pid);
+            } else {
+                // Unix/Linux/Mac: ps -p <pid>
+                pb = new ProcessBuilder("ps", "-p", String.valueOf(pid));
+            }
+
+            Process process = pb.start();
+            int exitCode = process.waitFor();
+
+            // Exit code 0 means the process exists
+            return exitCode == 0;
+        } catch (IOException | InterruptedException e) {
+            // If we can't check, assume it's not running
+            return false;
+        }
+    }
+
+    private int executeSpringBoot() throws InterruptedException, IOException {
+        List<String> command = new ArrayList<>();
+        command.add("mvn");
+        command.add("spring-boot:run");
+
+        return ProcessExecutor.executeCommand(command);
+    }
+
+}

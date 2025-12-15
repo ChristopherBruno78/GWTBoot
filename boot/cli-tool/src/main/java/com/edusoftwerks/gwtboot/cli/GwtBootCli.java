@@ -15,6 +15,7 @@ import java.util.concurrent.Callable;
         BootCommand.class,
         ActivityCommand.class,
         ServiceCommand.class,
+        RunCommand.class,
         UninstallCommand.class
     }
 )
@@ -46,6 +47,7 @@ public class GwtBootCli implements Callable<Integer> {
         Console.info("  boot <artifactId>    Generate a new GWT Boot project from archetype");
         Console.info("  activity <name>      Create a new activity in the current project");
         Console.info("  service <name>       Create a new GWT RPC service in the current project");
+        Console.info("  run [-m <mb>]        Launch GWT CodeServer and Spring Boot for development");
         Console.info("  uninstall            Uninstall GWT Boot CLI from your system");
         Console.info("  help                 Show this help message");
         Console.info("  version              Show version information");
@@ -54,6 +56,8 @@ public class GwtBootCli implements Callable<Integer> {
         Console.info("  gwt-boot boot myapp");
         Console.info("  gwt-boot activity dashboard");
         Console.info("  gwt-boot service UserAuth");
+        Console.info("  gwt-boot run");
+        Console.info("  gwt-boot run -m 4096");
         Console.info("");
         return 0;
     }

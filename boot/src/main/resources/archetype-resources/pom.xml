@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>s
+        <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.5.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
@@ -16,7 +16,7 @@
 
     <properties>
         <spring.version>3.4.4</spring.version>
-        <gwtboot.version>2.12.3</gwtboot.version>
+        <gwt.version>2.12.3</gwt.version>
         <start-class>${groupId}.${artifactId}.Application</start-class>
         <pdfbox.version>3.0.2</pdfbox.version>
         <apache.crypto.version>1.17.2</apache.crypto.version>
@@ -35,7 +35,7 @@
             <dependency>
                 <groupId>org.gwtproject</groupId>
                 <artifactId>gwt</artifactId>
-                <version>${gwtboot.version}</version>
+                <version>${gwt.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -89,7 +89,7 @@
         <dependency>
             <groupId>org.gwtproject</groupId>
             <artifactId>gwt-dev</artifactId>
-            <version>${gwtboot.version}</version>
+            <version>${gwt.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -97,7 +97,7 @@
         <dependency>
             <groupId>org.gwtproject</groupId>
             <artifactId>gwt-servlet-jakarta</artifactId>
-            <version>${gwtboot.version}</version>
+            <version>${gwt.version}</version>
         </dependency>
 
         <!-- Apache Crypto -->
