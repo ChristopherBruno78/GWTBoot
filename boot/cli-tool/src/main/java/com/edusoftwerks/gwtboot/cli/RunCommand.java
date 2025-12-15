@@ -4,15 +4,18 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import static java.nio.file.StandardWatchEventKinds.*;
 
 @Command(
     name = "run",
@@ -145,8 +148,20 @@ public class RunCommand implements Callable<Integer> {
             }
         }));
 
+        // Start file watcher (excluding client package)
+        Thread watcherThread = new Thread(() -> {
+            try {
+                watchFileChanges();
+            } catch (Exception e) {
+                Console.error("File watcher error: " + e.getMessage());
+            }
+        });
+        watcherThread.setDaemon(true);
+        watcherThread.start();
+
         // Start Spring Boot (runs in foreground, blocking)
         Console.info("Starting Spring Boot application...");
+        Console.info("Watching for changes (excluding 'client' package)...");
         Console.info("Press Ctrl+C to stop both services");
         Console.println("");
         Console.println("=== Spring Boot Output ===");
@@ -331,6 +346,116 @@ public class RunCommand implements Callable<Integer> {
         command.add("spring-boot:run");
 
         return ProcessExecutor.executeCommand(command);
+    }
+
+    private void watchFileChanges() throws IOException, InterruptedException {
+        Path srcMainJava = Paths.get("src/main/java");
+        if (!Files.exists(srcMainJava)) {
+            Console.warning("Source directory not found, file watcher disabled");
+            return;
+        }
+
+        WatchService watchService = FileSystems.getDefault().newWatchService();
+        Map<WatchKey, Path> watchKeys = new HashMap<>();
+
+        // Register all directories EXCEPT those containing "client"
+        Files.walkFileTree(srcMainJava, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                String pathString = dir.toString();
+
+                // Skip if this path contains "client"
+                if (pathString.contains("/client") || pathString.contains("\\client")) {
+                    return FileVisitResult.SKIP_SUBTREE;
+                }
+
+                // Register this directory
+                WatchKey key = dir.register(watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
+                watchKeys.put(key, dir);
+                return FileVisitResult.CONTINUE;
+            }
+        });
+
+        if (watchKeys.isEmpty()) {
+            Console.warning("No directories to watch, file watcher disabled");
+            return;
+        }
+
+        Console.info("Watching " + watchKeys.size() + " directories for changes");
+
+        long lastCompileTime = 0;
+        final long DEBOUNCE_MS = 250;
+
+        while (true) {
+            WatchKey key = watchService.take();
+            Path dir = watchKeys.get(key);
+
+            if (dir == null) {
+                key.reset();
+                continue;
+            }
+
+            for (WatchEvent<?> event : key.pollEvents()) {
+                WatchEvent.Kind<?> kind = event.kind();
+
+                if (kind == OVERFLOW) {
+                    continue;
+                }
+
+                @SuppressWarnings("unchecked")
+                WatchEvent<Path> ev = (WatchEvent<Path>) event;
+                Path filename = ev.context();
+                Path changedFile = dir.resolve(filename);
+
+                // Only react to .java files
+                if (filename.toString().endsWith(".java")) {
+                    long currentTime = System.currentTimeMillis();
+
+                    // Debounce: only compile if enough time has passed since last compile
+                    if (currentTime - lastCompileTime > DEBOUNCE_MS) {
+                        lastCompileTime = currentTime;
+
+                        Console.println("");
+                        Console.info("=============================");
+                        Console.info("Detected change: " + changedFile.getFileName());
+                        Console.info("Compiling...");
+                        Console.info("=============================");
+
+                        // Run mvn compile
+                        try {
+                            List<String> command = new ArrayList<>();
+                            command.add("mvn");
+                            command.add("compile");
+
+                            ProcessBuilder pb = new ProcessBuilder(command);
+                            pb.redirectErrorStream(true);
+                            pb.inheritIO();
+
+                            Process compileProcess = pb.start();
+                            int exitCode = compileProcess.waitFor();
+
+                            if (exitCode == 0) {
+                                Console.info("Compilation successful");
+                            } else {
+                                Console.error("Compilation failed with exit code: " + exitCode);
+                            }
+                        } catch (IOException | InterruptedException e) {
+                            Console.error("Compilation error: " + e.getMessage());
+                        }
+
+                        Console.println("");
+                    }
+                }
+            }
+
+            boolean valid = key.reset();
+            if (!valid) {
+                watchKeys.remove(key);
+                if (watchKeys.isEmpty()) {
+                    break;
+                }
+            }
+        }
     }
 
 }
