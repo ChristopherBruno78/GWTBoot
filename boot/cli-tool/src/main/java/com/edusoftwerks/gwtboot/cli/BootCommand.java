@@ -3,16 +3,15 @@ package com.edusoftwerks.gwtboot.cli;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 @Command(
-    name = "boot",
-    description = "Generate a new GWT Boot project from archetype",
-    mixinStandardHelpOptions = true
+        name = "boot",
+        description = "Generate a new GWT Boot project from archetype",
+        mixinStandardHelpOptions = true
 )
 public class BootCommand implements Callable<Integer> {
 
@@ -50,15 +49,15 @@ public class BootCommand implements Callable<Integer> {
 
         // Prompt for version (with default)
         String version = InputReader.readLineWithDefault(
-            "Enter version (default: 0.0.1-SNAPSHOT): ",
-            "0.0.1-SNAPSHOT"
+                "Enter version (default: 0.0.1-SNAPSHOT): ",
+                "0.0.1-SNAPSHOT"
         );
 
         // Prompt for package (with default derived from groupId.artifactId)
         String defaultPackage = groupId + "." + artifactId;
         String packageName = InputReader.readLineWithDefault(
-            "Enter package name (default: " + defaultPackage + "): ",
-            defaultPackage
+                "Enter package name (default: " + defaultPackage + "): ",
+                defaultPackage
         );
 
         Console.println("");
@@ -99,8 +98,8 @@ public class BootCommand implements Callable<Integer> {
                 String pomContent = Files.readString(pomPath);
                 // Replace <name>artifactId</name> with <name>appName</name>
                 pomContent = pomContent.replaceFirst(
-                    "<name>" + artifactId + "</name>",
-                    "<name>" + appName + "</name>"
+                        "<name>" + artifactId + "</name>",
+                        "<name>" + appName + "</name>"
                 );
                 Files.writeString(pomPath, pomContent);
                 Console.info("Updated pom.xml with app name: " + appName);

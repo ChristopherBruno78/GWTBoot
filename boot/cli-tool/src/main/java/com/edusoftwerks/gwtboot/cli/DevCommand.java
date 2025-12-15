@@ -11,18 +11,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
 @Command(
-    name = "run",
-    description = "Launch the GWT CodeServer for development",
-    mixinStandardHelpOptions = true
+        name = "dev",
+        description = "Launch the GWT CodeServer for development",
+        mixinStandardHelpOptions = true
 )
-public class RunCommand implements Callable<Integer> {
+public class DevCommand implements Callable<Integer> {
 
     @Option(names = {"-m", "--memory"}, description = "Maximum heap size in MB (default: ${DEFAULT-VALUE})", defaultValue = "2048")
     private int maxMemoryMb;
@@ -70,7 +67,7 @@ public class RunCommand implements Callable<Integer> {
         }
 
         // Extract GWT version from pom.xml
-        String gwtVersion = extractGwtVersionFromPom(pomPath);
+        String gwtVersion = Utils.extractGwtVersionFromPom(pomPath);
         if (gwtVersion == null) {
             Console.error("Could not determine GWT version from pom.xml");
             return 1;
@@ -79,7 +76,7 @@ public class RunCommand implements Callable<Integer> {
         Console.info("Using GWT version: " + gwtVersion);
 
         // Find all GWT modules
-        List<String> moduleNames = findGwtModules();
+        List<String> moduleNames = Utils.findGwtModules();
         if (moduleNames.isEmpty()) {
             Console.error("Could not find any GWT modules (*.gwt.xml) in src/main/java");
             return 1;
@@ -92,7 +89,7 @@ public class RunCommand implements Callable<Integer> {
         Console.println("");
 
         // Build classpath
-        String classpath = buildClasspath(gwtVersion);
+        String classpath = Utils.buildClasspath(gwtVersion);
         if (classpath == null) {
             Console.error("Could not find gwt-codeserver jar in Maven repository");
             Console.error("Please ensure GWT is installed in your local Maven repository");
@@ -192,112 +189,10 @@ public class RunCommand implements Callable<Integer> {
         return exitCode;
     }
 
-    private String extractGwtVersionFromPom(Path pomPath) throws IOException {
-        String content = Files.readString(pomPath);
-
-        // Look for gwt.version property
-        Pattern pattern = Pattern.compile("<gwt\\.version>([^<]+)</gwt\\.version>");
-        Matcher matcher = pattern.matcher(content);
-
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-
-        return null;
-    }
-
-    private List<String> findGwtModules() throws IOException {
-        List<String> modules = new ArrayList<>();
-        Path srcMainJava = Paths.get("src/main/java");
-
-        if (!Files.exists(srcMainJava)) {
-            return modules;
-        }
-
-        try (Stream<Path> paths = Files.walk(srcMainJava)) {
-            paths
-                .filter(Files::isRegularFile)
-                .filter(p -> p.toString().endsWith(".gwt.xml"))
-                .forEach(path -> {
-                    // Convert file path to module name
-                    // e.g., src/main/java/com/example/App.gwt.xml -> com.example.App
-                    String relativePath = srcMainJava.relativize(path).toString();
-                    String moduleName = relativePath.replace('/', '.')
-                                                     .replace('\\', '.')
-                                                     .replace(".gwt.xml", "");
-                    modules.add(moduleName);
-                });
-        }
-
-        return modules;
-    }
-
-    private String buildClasspath(String gwtVersion) throws IOException, InterruptedException {
-        String pathSeparator = System.getProperty("path.separator");
-        List<String> classpathEntries = new ArrayList<>();
-
-        // Use Maven to build the complete classpath including all transitive dependencies
-        Console.info("Building classpath from Maven dependencies...");
-        String mavenClasspath = getMavenClasspath();
-
-        if (mavenClasspath != null && !mavenClasspath.isEmpty()) {
-            // Add Maven-resolved dependencies
-            String[] mavenJars = mavenClasspath.split(pathSeparator);
-            for (String jar : mavenJars) {
-                if (!jar.trim().isEmpty()) {
-                    classpathEntries.add(jar.trim());
-                }
-            }
-        } else {
-            Console.error("Failed to build classpath from Maven");
-            return null;
-        }
-
-        // Add project's source and compiled classes
-        classpathEntries.add("src/main/java");
-        classpathEntries.add("target/classes");
-
-        return String.join(pathSeparator, classpathEntries);
-    }
-
-    private String getMavenClasspath() throws IOException, InterruptedException {
-        // Ensure target directory exists
-        Files.createDirectories(Paths.get("target"));
-
-        List<String> command = new ArrayList<>();
-        command.add("mvn");
-        command.add("dependency:build-classpath");
-        command.add("-DincludeScope=test");  // test scope includes compile, runtime, and provided
-        command.add("-Dmdep.outputFile=target/classpath.txt");
-
-        ProcessBuilder pb = new ProcessBuilder(command);
-        pb.inheritIO();
-        Process process = pb.start();
-        int exitCode = process.waitFor();
-
-        if (exitCode != 0) {
-            Console.warning("Maven dependency:build-classpath failed with exit code " + exitCode);
-            return null;
-        }
-
-        // Read the classpath from the output file
-        Path classpathFile = Paths.get("target/classpath.txt");
-        if (Files.exists(classpathFile)) {
-            String classpath = Files.readString(classpathFile).trim();
-            // Don't delete - keep for debugging
-            return classpath;
-        }
-
-        Console.warning("Classpath file not found at target/classpath.txt");
-        return null;
-    }
-
-
     private Process executeGwtCodeServer(String classpath, List<String> moduleNames, int maxMemoryMb) throws IOException {
         List<String> command = new ArrayList<>();
         command.add("java");
         command.add("-Xmx" + maxMemoryMb + "m");
-        command.add("-Dgwt.persistentunitcachedir=target");
         command.add("-cp");
         command.add(classpath);
         command.add("com.google.gwt.dev.codeserver.CodeServer");

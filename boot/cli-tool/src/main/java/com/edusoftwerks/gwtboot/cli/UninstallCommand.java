@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 @Command(
-    name = "uninstall",
-    description = "Uninstall GWT Boot CLI from your system"
+        name = "uninstall",
+        description = "Uninstall GWT Boot CLI from your system"
 )
 public class UninstallCommand implements Callable<Integer> {
 
@@ -107,21 +107,21 @@ public class UninstallCommand implements Callable<Integer> {
         if (os.contains("win")) {
             // Windows installation
             checkAndAdd(installations, "Windows User Installation",
-                home + "\\AppData\\Local\\gwt-boot\\lib\\gwt-boot-cli.jar",
-                home + "\\AppData\\Local\\gwt-boot\\bin\\gwt-boot.bat",
-                home + "\\AppData\\Local\\gwt-boot\\bin\\gwt-boot.ps1",
-                home + "\\AppData\\Local\\gwt-boot"  // Directory itself
+                    home + "\\AppData\\Local\\gwt-boot\\lib\\gwt-boot-cli.jar",
+                    home + "\\AppData\\Local\\gwt-boot\\bin\\gwt-boot.bat",
+                    home + "\\AppData\\Local\\gwt-boot\\bin\\gwt-boot.ps1",
+                    home + "\\AppData\\Local\\gwt-boot"  // Directory itself
             );
         } else {
             // Linux/macOS installations
             checkAndAdd(installations, "System-wide Installation (/usr/local)",
-                "/usr/local/lib/gwt-boot/gwt-boot-cli.jar",
-                "/usr/local/bin/gwt-boot"
+                    "/usr/local/lib/gwt-boot/gwt-boot-cli.jar",
+                    "/usr/local/bin/gwt-boot"
             );
 
             checkAndAdd(installations, "User Installation (~/.local)",
-                home + "/.local/lib/gwt-boot/gwt-boot-cli.jar",
-                home + "/.local/bin/gwt-boot"
+                    home + "/.local/lib/gwt-boot/gwt-boot-cli.jar",
+                    home + "/.local/bin/gwt-boot"
             );
         }
 
@@ -160,24 +160,17 @@ public class UninstallCommand implements Callable<Integer> {
     private void deleteDirectory(Path directory) throws IOException {
         if (Files.exists(directory)) {
             Files.walk(directory)
-                .sorted((a, b) -> b.compareTo(a)) // Reverse order to delete files before directories
-                .forEach(path -> {
-                    try {
-                        Files.delete(path);
-                    } catch (IOException e) {
-                        // Will be reported by caller
-                    }
-                });
+                    .sorted((a, b) -> b.compareTo(a)) // Reverse order to delete files before directories
+                    .forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            // Will be reported by caller
+                        }
+                    });
         }
     }
 
-    private static class InstallLocation {
-        final String description;
-        final List<String> files;
-
-        InstallLocation(String description, List<String> files) {
-            this.description = description;
-            this.files = files;
-        }
+    private record InstallLocation(String description, List<String> files) {
     }
 }

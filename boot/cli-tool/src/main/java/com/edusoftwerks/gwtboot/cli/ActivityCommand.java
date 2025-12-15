@@ -3,16 +3,15 @@ package com.edusoftwerks.gwtboot.cli;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 @Command(
-    name = "activity",
-    description = "Create a new activity in the current project",
-    mixinStandardHelpOptions = true
+        name = "activity",
+        description = "Create a new activity in the current project",
+        mixinStandardHelpOptions = true
 )
 public class ActivityCommand implements Callable<Integer> {
 
@@ -36,7 +35,7 @@ public class ActivityCommand implements Callable<Integer> {
         }
 
         // Extract package name from pom.xml
-        String packageName = PomUtils.extractPackageFromPom(pomPath);
+        String packageName = Utils.extractPackageFromPom(pomPath);
         if (packageName == null) {
             Console.error("Could not determine package from pom.xml");
             return 1;
@@ -103,130 +102,130 @@ public class ActivityCommand implements Callable<Integer> {
         // Create GWT module file
         Console.info("Creating " + activityClass + ".gwt.xml...");
         Files.writeString(gwtXmlFile,
-            String.format("""
-            <module rename-to="%s">
-                <inherits name="%s.App"/>
-
-                <source path="client"/>
-                <source path="shared"/>
-
-                <entry-point class="%s.activities.%s.client.%sPresenter" />
-
-            </module>
-            """, activityName, packageName, packageName, activityName, activityClass)
+                String.format("""
+                        <module rename-to="%s">
+                            <inherits name="%s.App"/>
+                        
+                            <source path="client"/>
+                            <source path="shared"/>
+                        
+                            <entry-point class="%s.activities.%s.client.%sPresenter" />
+                        
+                        </module>
+                        """, activityName, packageName, packageName, activityName, activityClass)
         );
 
         // Create Presenter class
         Console.info("Creating " + activityClass + "Presenter.java...");
         Files.writeString(presenterFile,
-            String.format("""
-            package %s.activities.%s.client;
-
-            import com.google.gwt.user.client.mvp.ViewPresenter;
-
-            public class %sPresenter extends ViewPresenter<%sView> {
-
-                public %sPresenter() {
-                    super(new %sView());
-                }
-
-            }
-            """, packageName, activityName, activityClass, activityClass, activityClass, activityClass)
+                String.format("""
+                        package %s.activities.%s.client;
+                        
+                        import com.google.gwt.user.client.mvp.ViewPresenter;
+                        
+                        public class %sPresenter extends ViewPresenter<%sView> {
+                        
+                            public %sPresenter() {
+                                super(new %sView());
+                            }
+                        
+                        }
+                        """, packageName, activityName, activityClass, activityClass, activityClass, activityClass)
         );
 
         // Create View class
         Console.info("Creating " + activityClass + "View.java...");
         Files.writeString(viewFile,
-            String.format("""
-            package %s.activities.%s.client;
-
-            import com.google.gwt.user.client.mvp.View;
-            import com.google.gwt.core.client.GWT;
-            import com.google.gwt.uibinder.client.UiBinder;
-            import com.google.gwt.user.client.ui.HTMLPanel;
-
-            public class %sView extends View<%sPresenter> {
-
-                interface %sViewUiBinder extends UiBinder<HTMLPanel, %sView> {}
-                private static final %sViewUiBinder uiBinder = GWT.create(%sViewUiBinder.class);
-
-                 @Override
-                 protected void bind() {
-                   initWidget(uiBinder.createAndBindUi(this));
-                 }
-            }
-            """, packageName, activityName, activityClass, activityClass,
-                activityClass, activityClass, activityClass, activityClass)
+                String.format("""
+                                package %s.activities.%s.client;
+                                
+                                import com.google.gwt.user.client.mvp.View;
+                                import com.google.gwt.core.client.GWT;
+                                import com.google.gwt.uibinder.client.UiBinder;
+                                import com.google.gwt.user.client.ui.HTMLPanel;
+                                
+                                public class %sView extends View<%sPresenter> {
+                                
+                                    interface %sViewUiBinder extends UiBinder<HTMLPanel, %sView> {}
+                                    private static final %sViewUiBinder uiBinder = GWT.create(%sViewUiBinder.class);
+                                
+                                     @Override
+                                     protected void bind() {
+                                       initWidget(uiBinder.createAndBindUi(this));
+                                     }
+                                }
+                                """, packageName, activityName, activityClass, activityClass,
+                        activityClass, activityClass, activityClass, activityClass)
         );
 
         // Create UiBinder template
         Console.info("Creating " + activityClass + "View.ui.xml...");
         Files.writeString(uiXmlFile,
-            """
-            <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
-            <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-                         xmlns:g="urn:import:com.google.gwt.user.client.ui">
-                <g:HTMLPanel>
-                     <!-- Add your widgets here -->
-                </g:HTMLPanel>
-            </ui:UiBinder>
-            """
+                """
+                        <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+                        <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+                                     xmlns:g="urn:import:com.google.gwt.user.client.ui">
+                            <g:HTMLPanel>
+                                 <!-- Add your widgets here -->
+                            </g:HTMLPanel>
+                        </ui:UiBinder>
+                        """
         );
 
         // Create Controller class
         Console.info("Creating " + activityClass + "Controller.java...");
         Files.writeString(controllerFile,
-            String.format("""
-            package %s.activities.%s.server;
-
-            import org.springframework.stereotype.Controller;
-            import org.springframework.web.bind.annotation.GetMapping;
-            import org.springframework.web.bind.annotation.RequestMapping;
-
-            @Controller
-            @RequestMapping("/%s")
-            public class %sController {
-
-                @GetMapping
-                public String index() {
-                    return "%s/index";
-                }
-            }
-            """, packageName, activityName, activityName, activityClass, activityName)
+                String.format("""
+                        package %s.activities.%s.server;
+                        
+                        import org.springframework.stereotype.Controller;
+                        import org.springframework.web.bind.annotation.GetMapping;
+                        import org.springframework.web.bind.annotation.RequestMapping;
+                        
+                        @Controller
+                        @RequestMapping("/%s")
+                        public class %sController {
+                        
+                            @GetMapping
+                            public String index() {
+                                return "%s/index";
+                            }
+                        }
+                        """, packageName, activityName, activityName, activityClass, activityName)
         );
 
         // Create templates directory and index.html
         Console.info("Creating templates/" + activityName + "/index.html...");
         Files.createDirectories(templatesDir);
         Files.writeString(htmlFile,
-            String.format("""
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <meta name="csrf-token" th:content="${_csrf.token}"/>
-
-                <title>%s</title>
-
-                <style>
-                        html, body {
-                            line-height: 1.6;
-                            text-rendering: optimizeLegibility;
-                            -webkit-font-smoothing: antialiased;
-                            -moz-osx-font-smoothing: grayscale;
-                            margin: 0;
-                            height: 100%%;
-                        }
-                </style>
-
-                <script type="text/javascript" src="/%s/%s.nocache.js" defer></script>
-            </head>
-            <body>
-
-            </body>
-            </html>
-            """, capitalize(activityName), activityName, activityName)
+                String.format("""
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <meta name="csrf-token" th:content="${_csrf.token}"/>
+                        
+                            <title>%s</title>
+                        
+                            <style>
+                                    html, body {
+                                        line-height: 1.6;
+                                        text-rendering: optimizeLegibility;
+                                        -webkit-font-smoothing: antialiased;
+                                        -moz-osx-font-smoothing: grayscale;
+                                        margin: 0;
+                                        height: 100%%;
+                                    }
+                            </style>
+                        
+                            <script type="text/javascript" src="/%s/%s.nocache.js" defer></script>
+                        </head>
+                        <body>
+                        
+                        </body>
+                        </html>
+                        """, capitalize(activityName), activityName, activityName)
         );
 
         Console.println("");

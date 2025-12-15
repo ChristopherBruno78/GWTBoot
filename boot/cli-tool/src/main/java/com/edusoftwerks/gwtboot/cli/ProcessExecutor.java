@@ -1,14 +1,12 @@
 package com.edusoftwerks.gwtboot.cli;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProcessExecutor {
 
-    private static String archetypeVersion = "1.0.0";
+    private static final String archetypeVersion = "1.0.0";
 
     public static int executeMavenArchetype(
             String groupId,

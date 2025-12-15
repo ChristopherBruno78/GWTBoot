@@ -3,16 +3,15 @@ package com.edusoftwerks.gwtboot.cli;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 @Command(
-    name = "service",
-    description = "Create a new GWT RPC service in the current project",
-    mixinStandardHelpOptions = true
+        name = "service",
+        description = "Create a new GWT RPC service in the current project",
+        mixinStandardHelpOptions = true
 )
 public class ServiceCommand implements Callable<Integer> {
 
@@ -39,7 +38,7 @@ public class ServiceCommand implements Callable<Integer> {
         }
 
         // Extract package name from pom.xml
-        String packageName = PomUtils.extractPackageFromPom(pomPath);
+        String packageName = Utils.extractPackageFromPom(pomPath);
         if (packageName == null) {
             Console.error("Could not determine package from pom.xml");
             return 1;
@@ -95,78 +94,78 @@ public class ServiceCommand implements Callable<Integer> {
         // Create Service interface
         Console.info("Creating " + serviceClass + "Service.java...");
         Files.writeString(serviceFile,
-            String.format("""
-            package %s.shared.services.%s;
-
-            import com.google.gwt.core.shared.GWT;
-            import com.google.gwt.user.client.rpc.RemoteService;
-            import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-
-            @RemoteServiceRelativePath("../%s/service")
-            public interface %sService extends RemoteService {
-
-                // Add your service methods here
-                // Example:
-                // String exampleMethod(String parameter);
-
-                class Instance {
-                    private static final %sServiceAsync INSTANCE = GWT.create(
-                      %sService.class
-                    );
-
-                    public static %sServiceAsync get() {
-                      return INSTANCE;
-                    }
-                  }
-
-            }
-            """, packageName, serviceName, serviceName, serviceClass,
-                serviceClass, serviceClass, serviceClass)
+                String.format("""
+                                package %s.shared.services.%s;
+                                
+                                import com.google.gwt.core.shared.GWT;
+                                import com.google.gwt.user.client.rpc.RemoteService;
+                                import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+                                
+                                @RemoteServiceRelativePath("../%s/service")
+                                public interface %sService extends RemoteService {
+                                
+                                    // Add your service methods here
+                                    // Example:
+                                    // String exampleMethod(String parameter);
+                                
+                                    class Instance {
+                                        private static final %sServiceAsync INSTANCE = GWT.create(
+                                          %sService.class
+                                        );
+                                
+                                        public static %sServiceAsync get() {
+                                          return INSTANCE;
+                                        }
+                                      }
+                                
+                                }
+                                """, packageName, serviceName, serviceName, serviceClass,
+                        serviceClass, serviceClass, serviceClass)
         );
 
         // Create Async interface
         Console.info("Creating " + serviceClass + "ServiceAsync.java...");
         Files.writeString(asyncFile,
-            String.format("""
-            package %s.shared.services.%s;
-
-            import com.google.gwt.user.client.rpc.AsyncCallback;
-
-            public interface %sServiceAsync {
-
-                // Add async versions of your service methods here
-                // Example:
-                // void exampleMethod(String parameter, AsyncCallback<String> callback);
-
-            }
-            """, packageName, serviceName, serviceClass)
+                String.format("""
+                        package %s.shared.services.%s;
+                        
+                        import com.google.gwt.user.client.rpc.AsyncCallback;
+                        
+                        public interface %sServiceAsync {
+                        
+                            // Add async versions of your service methods here
+                            // Example:
+                            // void exampleMethod(String parameter, AsyncCallback<String> callback);
+                        
+                        }
+                        """, packageName, serviceName, serviceClass)
         );
 
         // Create Service implementation
         Console.info("Creating " + serviceClass + "ServiceImpl.java...");
         Files.writeString(implFile,
-            String.format("""
-            package %s.services;
-
-            import %s.shared.services.%s.%sService;
-            import com.google.gwt.user.server.rpc.jakarta.RemoteServiceServlet;
-            import jakarta.servlet.annotation.WebServlet;
-            import org.springframework.stereotype.Service;
-
-            @WebServlet("/%s/service")
-            @Service
-            public class %sServiceImpl extends RemoteServiceServlet implements %sService {
-
-                // Implement your service methods here
-                // Example:
-                // @Override
-                // public String exampleMethod(String parameter) {
-                //     return "Response: " + parameter;
-                // }
-
-            }
-            """, packageName, packageName, serviceName, serviceClass,
-                serviceName.toLowerCase(), serviceClass, serviceClass)
+                String.format("""
+                                package %s.services;
+                                
+                                import %s.shared.services.%s.%sService;
+                                import com.google.gwt.user.server.rpc.jakarta.RemoteServiceServlet;
+                                import jakarta.servlet.annotation.WebServlet;
+                                import org.springframework.stereotype.Service;
+                                
+                                @WebServlet("/%s/service")
+                                @Service
+                                public class %sServiceImpl extends RemoteServiceServlet implements %sService {
+                                
+                                    // Implement your service methods here
+                                    // Example:
+                                    // @Override
+                                    // public String exampleMethod(String parameter) {
+                                    //     return "Response: " + parameter;
+                                    // }
+                                
+                                }
+                                """, packageName, packageName, serviceName, serviceClass,
+                        serviceName.toLowerCase(), serviceClass, serviceClass)
         );
 
         Console.println("");
