@@ -131,12 +131,18 @@ public class JarCommand implements Callable<Integer> {
         command.add("com.google.gwt.dev.Compiler");
         command.add("-war");
         command.add("target/classes/static");
+        command.add("-sourceLevel");
+        command.add("17");
         command.add("-logLevel");
         command.add("INFO");
         command.add("-style");
         command.add("OBFUSCATED");
         command.add("-optimize");
         command.add("9");
+        command.add("-extra");
+        command.add("target/extra");
+        command.add("-compileReport");
+        command.add("-XcompilerMetrics");
 
         // Add all module names to the command
         command.addAll(moduleNames);
