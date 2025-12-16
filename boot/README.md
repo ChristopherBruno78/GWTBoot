@@ -211,8 +211,8 @@ This generates:
 
 **Component Structure**
 - `client/components/Button.java` - Component class
-- `client/components/resources/button/Button.ui.xml` - UiBinder template
-- `client/components/resources/button/style.css` - Component styles
+- `client/components/resources/button/Button.ui.xml` - UiBinder template (lowercase folder)
+- `client/components/resources/button/style.css` - Component styles (lowercase folder)
 
 **Component Class**
 ```java
@@ -242,8 +242,11 @@ public class Button extends Composite {
     private static final ButtonUiBinder uiBinder = GWT.create(ButtonUiBinder.class);
     private static final Resources resources = GWT.create(Resources.class);
 
-    public Button() {
+    static {
         resources.style().ensureInjected();
+    }
+
+    public Button() {
         initWidget(uiBinder.createAndBindUi(this));
     }
 }
@@ -285,7 +288,7 @@ your-project/
 │   │   │       │   └── components/           # UI components
 │   │   │       │       ├── <Component>.java
 │   │   │       │       └── resources/
-│   │   │       │           └── <component>/
+│   │   │       │           └── <componentlower>/
 │   │   │       │               ├── <Component>.ui.xml
 │   │   │       │               └── style.css
 │   │   │       ├── services/                 # RPC implementations

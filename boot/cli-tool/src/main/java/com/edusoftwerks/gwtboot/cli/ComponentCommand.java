@@ -58,6 +58,7 @@ public class ComponentCommand implements Callable<Integer> {
 
         // Capitalize component name for class names
         String componentClass = capitalize(componentName);
+        String componentNameLower = componentName.toLowerCase();
 
         Console.info("===================================");
         Console.info("GWT Boot Component Generator");
@@ -69,7 +70,7 @@ public class ComponentCommand implements Callable<Integer> {
 
         // Check for existing files
         Path componentsDir = javaBase.resolve("client").resolve("components");
-        Path resourcesDir = componentsDir.resolve("resources").resolve(componentName);
+        Path resourcesDir = componentsDir.resolve("resources").resolve(componentNameLower);
 
         java.util.List<Path> existingFiles = new java.util.ArrayList<>();
 
@@ -114,7 +115,7 @@ public class ComponentCommand implements Callable<Integer> {
 
                         import com.google.gwt.core.client.GWT;
                         import com.google.gwt.resources.client.ClientBundle;
-                        import com.google.gwt.resources.client.CssResource;
+                        import com.google.gwt.resources.client.StyleResource;
                         import com.google.gwt.uibinder.client.UiBinder;
                         import com.google.gwt.uibinder.client.UiTemplate;
                         import com.google.gwt.user.client.ui.Composite;
@@ -123,25 +124,27 @@ public class ComponentCommand implements Callable<Integer> {
                         public class %s extends Composite {
 
                             interface Resources extends ClientBundle {
-                                @Source("resources/%s/style.css")
-                                Style style();
-                            }
+                                Resources INSTANCE = GWT.create(Resources.class);
 
-                            interface Style extends CssResource {
+                                @Source("resources/%s/style.css")
+                                StyleResource style();
+
                             }
 
                             @UiTemplate("resources/%s/%s.ui.xml")
                             interface %sUiBinder extends UiBinder<Widget, %s> {}
 
                             private static final %sUiBinder uiBinder = GWT.create(%sUiBinder.class);
-                            private static final Resources resources = GWT.create(Resources.class);
+
+                            static {
+                                Resources.INSTANCE.style().ensureInjected();
+                            }
 
                             public %s() {
-                                resources.style().ensureInjected();
                                 initWidget(uiBinder.createAndBindUi(this));
                             }
                         }
-                        """, packageName, componentClass, componentName, componentName, componentClass,
+                        """, packageName, componentClass, componentNameLower, componentNameLower, componentClass,
                         componentClass, componentClass, componentClass, componentClass, componentClass)
         );
 
