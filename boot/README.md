@@ -122,7 +122,7 @@ This generates:
 - `activities/dashboard/client/DashboardView.ui.xml` - UiBinder template
 
 **Server-side**
-- `activities/dashboard/server/DashboardController.java` - Spring Controller
+- `activities/dashboard/DashboardController.java` - Spring Controller
 
 **Shared**
 - `activities/dashboard/shared/` - DTOs and shared models
@@ -211,8 +211,7 @@ your-project/
 │   │   │       ├── activities/               # Activity modules
 │   │   │       │   └── <activity>/
 │   │   │       │       ├── client/           # GWT client code
-│   │   │       │       ├── server/           # Spring controllers
-│   │   │       │       ├── shared/           # Shared models
+│   │   │       │       ├── <Activity>Controller.java  # Spring controller
 │   │   │       │       └── <Activity>.gwt.xml
 │   │   │       ├── auth/                     # Authentication module
 │   │   │       ├── services/                 # RPC implementations
