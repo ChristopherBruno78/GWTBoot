@@ -61,6 +61,7 @@ public class ActivityCommand implements Callable<Integer> {
 
         // Check for existing files
         Path activityBaseDir = javaBase.resolve("activities").resolve(activityName);
+        Path controllersDir = javaBase.resolve("controllers");
         Path templatesDir = resourcesBase.resolve("templates").resolve(activityName);
 
         java.util.List<Path> existingFiles = new java.util.ArrayList<>();
@@ -68,7 +69,7 @@ public class ActivityCommand implements Callable<Integer> {
         Path presenterFile = activityBaseDir.resolve("client").resolve(activityClass + "Presenter.java");
         Path viewFile = activityBaseDir.resolve("client").resolve(activityClass + "View.java");
         Path uiXmlFile = activityBaseDir.resolve("client").resolve(activityClass + "View.ui.xml");
-        Path controllerFile = activityBaseDir.resolve("server").resolve(activityClass + "Controller.java");
+        Path controllerFile = controllersDir.resolve(activityClass + "Controller.java");
         Path gwtXmlFile = activityBaseDir.resolve(activityClass + ".gwt.xml");
         Path htmlFile = templatesDir.resolve("index.html");
 
@@ -95,9 +96,8 @@ public class ActivityCommand implements Callable<Integer> {
 
         // Create package directories
         Console.info("Creating package structure...");
-        Files.createDirectories(activityBaseDir.resolve("client"));
-        Files.createDirectories(activityBaseDir.resolve("shared"));
-        Files.createDirectories(activityBaseDir.resolve("server"));
+        Files.createDirectories(activityBaseDir.resolve("client")); 
+        Files.createDirectories(controllersDir);
 
         // Create GWT module file
         Console.info("Creating " + activityClass + ".gwt.xml...");
@@ -107,7 +107,6 @@ public class ActivityCommand implements Callable<Integer> {
                             <inherits name="%s.App"/>
                         
                             <source path="client"/>
-                            <source path="shared"/>
                         
                             <entry-point class="%s.activities.%s.client.%sPresenter" />
                         
@@ -176,22 +175,22 @@ public class ActivityCommand implements Callable<Integer> {
         Console.info("Creating " + activityClass + "Controller.java...");
         Files.writeString(controllerFile,
                 String.format("""
-                        package %s.activities.%s.server;
-                        
+                        package %s.controllers;
+
                         import org.springframework.stereotype.Controller;
                         import org.springframework.web.bind.annotation.GetMapping;
                         import org.springframework.web.bind.annotation.RequestMapping;
-                        
+
                         @Controller
                         @RequestMapping("/%s")
                         public class %sController {
-                        
+
                             @GetMapping
                             public String index() {
                                 return "%s/index";
                             }
                         }
-                        """, packageName, activityName, activityName, activityClass, activityName)
+                        """, packageName, activityName, activityClass, activityName)
         );
 
         // Create templates directory and index.html
@@ -237,8 +236,7 @@ public class ActivityCommand implements Callable<Integer> {
         Console.println("  - " + activityBaseDir.resolve("client").resolve(activityClass + "Presenter.java"));
         Console.println("  - " + activityBaseDir.resolve("client").resolve(activityClass + "View.java"));
         Console.println("  - " + activityBaseDir.resolve("client").resolve(activityClass + "View.ui.xml"));
-        Console.println("  - " + activityBaseDir.resolve("shared") + "/");
-        Console.println("  - " + activityBaseDir.resolve("server").resolve(activityClass + "Controller.java"));
+        Console.println("  - " + controllersDir.resolve(activityClass + "Controller.java"));
         Console.println("  - " + activityBaseDir.resolve(activityClass + ".gwt.xml"));
         Console.println("  - " + templatesDir.resolve("index.html"));
         Console.println("");
