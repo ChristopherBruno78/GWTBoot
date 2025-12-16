@@ -9,11 +9,11 @@ import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 @Command(
-        name = "boot",
+        name = "app",
         description = "Generate a new GWT Boot project from archetype",
         mixinStandardHelpOptions = true
 )
-public class BootCommand implements Callable<Integer> {
+public class AppCommand implements Callable<Integer> {
 
     @Parameters(index = "0", description = "The name of the application", arity = "0..1")
     private String appName;
@@ -103,6 +103,20 @@ public class BootCommand implements Callable<Integer> {
                 );
                 Files.writeString(pomPath, pomContent);
                 Console.info("Updated pom.xml with app name: " + appName);
+            }
+
+            // Rename App.gwt.xml to {appName}.gwt.xml
+            String packagePath = packageName.replace('.', '/');
+            Path appGwtXmlPath = Paths.get(appName, "src/main/java", packagePath, "App.gwt.xml");
+            Path newGwtXmlPath = Paths.get(appName, "src/main/java", packagePath, appName + ".gwt.xml");
+            if (Files.exists(appGwtXmlPath)) {
+                // Read and update content
+                String gwtXmlContent = Files.readString(appGwtXmlPath);
+                gwtXmlContent = gwtXmlContent.replace("rename-to='app'", "rename-to='" + artifactId + "'");
+
+                // Write to new file and delete old one
+                Files.writeString(newGwtXmlPath, gwtXmlContent);
+                Files.delete(appGwtXmlPath);
             }
 
             // Fix line endings and make scripts executable

@@ -11,9 +11,10 @@ import java.util.concurrent.Callable;
         mixinStandardHelpOptions = true,
         versionProvider = GwtBootCli.VersionProvider.class,
         subcommands = {
-                BootCommand.class,
+                AppCommand.class,
                 ActivityCommand.class,
                 ServiceCommand.class,
+                ComponentCommand.class,
                 DevCommand.class,
                 JarCommand.class,
                 UninstallCommand.class
@@ -44,9 +45,10 @@ public class GwtBootCli implements Callable<Integer> {
         Console.info("Usage: gwt-boot <command> [options]");
         Console.info("");
         Console.info("Commands:");
-        Console.info("  boot <appName>       Generate a new GWT Boot project from archetype");
+        Console.info("  app <appName>        Generate a new GWT Boot project from archetype");
         Console.info("  activity <name>      Create a new activity in the current project");
         Console.info("  service <name>       Create a new GWT RPC service in the current project");
+        Console.info("  component <name>     Create a new UI component in the current project");
         Console.info("  dev [-m <mb>]        Launch GWT CodeServer and Spring Boot for development");
         Console.info("  jar                  Build production JAR with compiled GWT code");
         Console.info("  uninstall            Uninstall GWT Boot CLI from your system");
@@ -54,9 +56,10 @@ public class GwtBootCli implements Callable<Integer> {
         Console.info("  version              Show version information");
         Console.info("");
         Console.info("Examples:");
-        Console.info("  gwt-boot boot MyApp");
+        Console.info("  gwt-boot app MyApp");
         Console.info("  gwt-boot activity dashboard");
         Console.info("  gwt-boot service UserAuth");
+        Console.info("  gwt-boot component button");
         Console.info("  gwt-boot dev");
         Console.info("  gwt-boot dev -m 4096");
         Console.info("  gwt-boot jar");

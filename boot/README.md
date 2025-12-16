@@ -28,13 +28,13 @@ gwt-boot version
 Generate a new GWT Boot project:
 
 ```bash
-gwt-boot boot myapp
+gwt-boot app myapp
 ```
 
 Or run interactively:
 
 ```bash
-gwt-boot boot
+gwt-boot app
 ```
 
 The CLI will prompt you for:
@@ -53,15 +53,16 @@ Your application will be available at:
 
 ```bash
 # Project Generation
-gwt-boot boot [artifactId]         # Create a new GWT Boot project
-gwt-boot create-project [name]     # Alias for boot
-gwt-boot new-project [name]        # Alias for boot
+gwt-boot app [appName]             # Create a new GWT Boot project
 
 # Code Generation
 gwt-boot activity <name>           # Generate a new activity module
-gwt-boot create-activity <name>    # Alias for activity
 gwt-boot service <name>            # Generate a new GWT RPC service
-gwt-boot create-service <name>     # Alias for service
+gwt-boot component <name>          # Generate a new UI component
+
+# Development & Build
+gwt-boot dev [-m <mb>]             # Launch GWT CodeServer and Spring Boot
+gwt-boot jar [-w <workers>]        # Build production JAR with compiled GWT
 
 # Help & Information
 gwt-boot help                      # Show all commands
@@ -198,6 +199,72 @@ public class UserAuthServiceImpl extends RemoteServiceServlet
 3. Implement methods in the service implementation
 4. Get service instance: `UserAuthService.Instance.get()`
 
+## Creating UI Components
+
+Generate reusable UI components with UiBinder templates:
+
+```bash
+gwt-boot component button
+```
+
+This generates:
+
+**Component Structure**
+- `client/components/Button.java` - Component class
+- `client/components/resources/button/Button.ui.xml` - UiBinder template
+- `client/components/resources/button/style.css` - Component styles
+
+**Component Class**
+```java
+package <package>.client.components;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Widget;
+
+public class Button extends Composite {
+
+    interface Resources extends ClientBundle {
+        @Source("resources/button/style.css")
+        Style style();
+    }
+
+    interface Style extends CssResource {
+    }
+
+    @UiTemplate("resources/button/Button.ui.xml")
+    interface ButtonUiBinder extends UiBinder<Widget, Button> {}
+
+    private static final ButtonUiBinder uiBinder = GWT.create(ButtonUiBinder.class);
+    private static final Resources resources = GWT.create(Resources.class);
+
+    public Button() {
+        resources.style().ensureInjected();
+        initWidget(uiBinder.createAndBindUi(this));
+    }
+}
+```
+
+The component uses:
+- **ClientBundle** for CSS resource management with `@Source` annotation
+- **UiTemplate** with `@Source` to reference the `.ui.xml` file
+- Automatic CSS injection via `ensureInjected()`
+
+The command automatically adds `<source path="client" />` to your main GWT module if not already present.
+
+### Using Components
+
+Import and use in your Views:
+```java
+import <package>.client.components.Button;
+
+Button myButton = new Button();
+```
+
 ## Project Structure
 
 ```
@@ -207,13 +274,20 @@ your-project/
 │   │   ├── java/
 │   │   │   └── <package>/
 │   │   │       ├── Application.java          # Spring Boot entry point
-│   │   │       ├── App.gwt.xml               # Main GWT module
+│   │   │       ├── <AppName>.gwt.xml         # Main GWT module
 │   │   │       ├── activities/               # Activity modules
 │   │   │       │   └── <activity>/
 │   │   │       │       ├── client/           # GWT client code
 │   │   │       │       ├── <Activity>Controller.java  # Spring controller
 │   │   │       │       └── <Activity>.gwt.xml
 │   │   │       ├── auth/                     # Authentication module
+│   │   │       ├── client/                   # Shared client code
+│   │   │       │   └── components/           # UI components
+│   │   │       │       ├── <Component>.java
+│   │   │       │       └── resources/
+│   │   │       │           └── <component>/
+│   │   │       │               ├── <Component>.ui.xml
+│   │   │       │               └── style.css
 │   │   │       ├── services/                 # RPC implementations
 │   │   │       └── shared/
 │   │   │           └── services/             # RPC service interfaces

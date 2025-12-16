@@ -48,6 +48,13 @@ public class ActivityCommand implements Callable<Integer> {
         Path javaBase = Paths.get("src/main/java", packagePath);
         Path resourcesBase = Paths.get("src/main/resources");
 
+        // Find the main GWT module name
+        String mainModuleName = findMainGwtModule(javaBase);
+        if (mainModuleName == null) {
+            Console.error("Could not find main GWT module (.gwt.xml) in " + javaBase);
+            return 1;
+        }
+
         // Capitalize activity name for class names
         String activityClass = capitalize(activityName);
 
@@ -103,14 +110,14 @@ public class ActivityCommand implements Callable<Integer> {
         Files.writeString(gwtXmlFile,
                 String.format("""
                         <module rename-to="%s">
-                            <inherits name="%s.App"/>
-                        
+                            <inherits name="%s.%s"/>
+
                             <source path="client"/>
-                        
+
                             <entry-point class="%s.activities.%s.client.%sPresenter" />
-                        
+
                         </module>
-                        """, activityName, packageName, packageName, activityName, activityClass)
+                        """, activityName, packageName, mainModuleName, packageName, activityName, activityClass)
         );
 
         // Create Presenter class
@@ -250,5 +257,27 @@ public class ActivityCommand implements Callable<Integer> {
             return str;
         }
         return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
+    private String findMainGwtModule(Path javaBase) throws java.io.IOException {
+        if (!Files.exists(javaBase)) {
+            return null;
+        }
+
+        // Look for .gwt.xml files directly in the base package directory (not in subdirectories)
+        try (java.util.stream.Stream<Path> files = Files.list(javaBase)) {
+            java.util.Optional<Path> gwtXmlFile = files
+                .filter(Files::isRegularFile)
+                .filter(p -> p.getFileName().toString().endsWith(".gwt.xml"))
+                .findFirst();
+
+            if (gwtXmlFile.isPresent()) {
+                String fileName = gwtXmlFile.get().getFileName().toString();
+                // Remove .gwt.xml extension to get module name
+                return fileName.substring(0, fileName.length() - 8);
+            }
+        }
+
+        return null;
     }
 }

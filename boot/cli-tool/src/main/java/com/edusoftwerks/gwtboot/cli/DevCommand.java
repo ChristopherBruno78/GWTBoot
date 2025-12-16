@@ -280,6 +280,8 @@ public class DevCommand implements Callable<Integer> {
 
         long lastCompileTime = 0;
         final long DEBOUNCE_MS = 250;
+        final long STARTUP_GRACE_PERIOD_MS = 5000; // Ignore events for first 5 seconds
+        long watcherStartTime = System.currentTimeMillis();
 
         while (true) {
             WatchKey key = watchService.take();
@@ -305,6 +307,11 @@ public class DevCommand implements Callable<Integer> {
                 // Only react to .java files
                 if (filename.toString().endsWith(".java")) {
                     long currentTime = System.currentTimeMillis();
+
+                    // Skip events during startup grace period
+                    if (currentTime - watcherStartTime < STARTUP_GRACE_PERIOD_MS) {
+                        continue;
+                    }
 
                     // Debounce: only compile if enough time has passed since last compile
                     if (currentTime - lastCompileTime > DEBOUNCE_MS) {
