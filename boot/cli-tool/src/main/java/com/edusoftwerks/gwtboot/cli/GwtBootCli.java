@@ -15,6 +15,8 @@ import java.util.concurrent.Callable;
                 ActivityCommand.class,
                 ServiceCommand.class,
                 ComponentCommand.class,
+                ModelCommand.class,
+                EntityCommand.class,
                 DevCommand.class,
                 JarCommand.class,
                 UninstallCommand.class
@@ -49,6 +51,8 @@ public class GwtBootCli implements Callable<Integer> {
         Console.info("  activity <name>      Create a new activity in the current project");
         Console.info("  service <name>       Create a new GWT RPC service in the current project");
         Console.info("  component <name>     Create a new UI component in the current project");
+        Console.info("  model <name>         Create a new domain model with DTO and Repository");
+        Console.info("  entity <name>        Create JPA entity from existing model in shared/models");
         Console.info("  dev [-m <mb>]        Launch GWT CodeServer and Spring Boot for development");
         Console.info("  jar                  Build production JAR with compiled GWT code");
         Console.info("  uninstall            Uninstall GWT Boot CLI from your system");
@@ -60,6 +64,8 @@ public class GwtBootCli implements Callable<Integer> {
         Console.info("  gwt-boot activity dashboard");
         Console.info("  gwt-boot service UserAuth");
         Console.info("  gwt-boot component button");
+        Console.info("  gwt-boot model User");
+        Console.info("  gwt-boot entity User");
         Console.info("  gwt-boot dev");
         Console.info("  gwt-boot dev -m 4096");
         Console.info("  gwt-boot jar");

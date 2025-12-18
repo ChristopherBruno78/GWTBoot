@@ -2,6 +2,9 @@ package ${package};
 
 import java.io.File;
 import java.util.Objects;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -16,7 +19,7 @@ import org.springframework.stereotype.Component;
 @ServletComponentScan
 @EnableMethodSecurity
 @EnableConfigurationProperties(SecurityProperties.class)
-public class Application {
+public class Application implements ApplicationRunner {
 
   public static void main(String[] args) {
     SpringApplication.run(Application.class, args);
@@ -43,5 +46,13 @@ public class Application {
         factory.setDocumentRoot(jsStaticDirectory);
       }
     }
+  }
+
+  @Autowired
+  BootStrap bootStrap;
+
+  @Override
+  public void run(ApplicationArguments args) throws Exception {
+    bootStrap.init();
   }
 }

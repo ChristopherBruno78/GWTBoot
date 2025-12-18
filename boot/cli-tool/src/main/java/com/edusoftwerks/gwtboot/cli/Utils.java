@@ -187,4 +187,18 @@ class Utils {
         Console.warning("Classpath file not found at target/classpath.txt");
         return null;
     }
+
+    static String capitalize(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
+    static String toSnakeCase(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        return str.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
+    }
 }
