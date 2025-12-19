@@ -166,15 +166,17 @@ public class ActivityCommand implements Callable<Integer> {
         // Create UiBinder template
         Console.info("Creating " + activityClass + "View.ui.xml...");
         Files.writeString(uiXmlFile,
-                """
+                String.format("""
                         <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
                         <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-                                     xmlns:g="urn:import:com.google.gwt.user.client.ui">
+                                     xmlns:g="urn:import:com.google.gwt.user.client.ui"
+                                     xmlns:c="urn:import:%s.client.components">
+                                     
                             <g:HTMLPanel>
                                  <!-- Add your widgets here -->
                             </g:HTMLPanel>
                         </ui:UiBinder>
-                        """
+                        """, packageName)
         );
 
         // Create Controller class
