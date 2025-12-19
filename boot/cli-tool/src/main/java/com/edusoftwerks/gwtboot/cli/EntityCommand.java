@@ -66,27 +66,20 @@ public class EntityCommand implements Callable<Integer> {
         Path sharedModelsDir = javaBase.resolve("shared/models");
         Path modelFile = sharedModelsDir.resolve(modelClass + ".java");
 
-        if (!Files.exists(modelFile)) {
-            Console.error("Model not found: " + modelFile);
-            Console.error("Please create " + modelClass + ".java in shared/models first.");
-            return 1;
+        List<FieldInfo> fields = new ArrayList<>();
+
+        if (Files.exists(modelFile)) {
+            Console.info("Found Model: " + modelFile);
+            // Read and parse the Model
+
+            String modelContent = Files.readString(modelFile);
+            fields = parseFields(modelContent);
         }
 
-        Console.info("Found Model: " + modelFile);
-
-        // Read and parse the Model
-        String modelContent = Files.readString(modelFile);
-        List<FieldInfo> fields = parseFields(modelContent);
-
-        if (fields.isEmpty()) {
-            Console.warning("No fields found in Model. Entity will be created with no fields.");
-        } else {
-            Console.info("Found " + fields.size() + " field(s) in model.");
-        }
-
+        Path persistenceDir = javaBase.resolve("persistence");
         // Define entity and repository paths
-        Path entitiesDir = javaBase.resolve("entities");
-        Path repositoriesDir = javaBase.resolve("repositories");
+        Path entitiesDir = persistenceDir.resolve("entities");
+        Path repositoriesDir = persistenceDir.resolve("repositories");
 
         Path entityFile = entitiesDir.resolve(modelClass + "Entity.java");
         Path repositoryFile = repositoriesDir.resolve(modelClass + "Repository.java");
@@ -112,6 +105,7 @@ public class EntityCommand implements Callable<Integer> {
 
         // Create directories
         Console.info("Creating package structure...");
+        Files.createDirectories(persistenceDir);
         Files.createDirectories(entitiesDir);
         Files.createDirectories(repositoriesDir);
 
@@ -173,32 +167,39 @@ public class EntityCommand implements Callable<Integer> {
     private String generateEntity(String packageName, String modelClass, List<FieldInfo> fields) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("package ").append(packageName).append(".entities;\n\n");
+        boolean hasFields = !fields.isEmpty();
+
+        sb.append("package ").append(packageName).append(".persistence.entities;\n\n");
         sb.append("import jakarta.persistence.*;\n");
-        sb.append("""
+
+        if (hasFields) {
+
+            sb.append("""
                 import org.mapstruct.Mapper;
                 import org.mapstruct.MappingConstants;
                 import org.mapstruct.factory.Mappers;
                 """);
 
+            boolean hasDate = fields.stream().anyMatch(f -> f.type.contains("Date"));
+            boolean hasLocalDate = fields.stream().anyMatch(f -> f.type.contains("LocalDate") || f.type.contains("LocalDateTime"));
+            boolean hasList = fields.stream().anyMatch(f -> f.entityType.contains("List"));
+            boolean hasSet = fields.stream().anyMatch(f -> f.entityType.contains("Set"));
+            boolean hasMap = fields.stream().anyMatch(f -> f.entityType.contains("Map"));
+
+            if (hasDate) {
+                sb.append("import java.util.Date;\n");
+            }
+            if (hasLocalDate) {
+                sb.append("import java.time.*;\n");
+            }
+            if (hasList || hasSet || hasMap) {
+                sb.append("import java.util.*;\n");
+            }
+
+            sb.append(String.format("\nimport %s.shared.models.%s;\n", packageName, modelClass));
+
+        }
         // Add any necessary imports based on field types
-        boolean hasDate = fields.stream().anyMatch(f -> f.type.contains("Date"));
-        boolean hasLocalDate = fields.stream().anyMatch(f -> f.type.contains("LocalDate") || f.type.contains("LocalDateTime"));
-        boolean hasList = fields.stream().anyMatch(f -> f.entityType.contains("List"));
-        boolean hasSet = fields.stream().anyMatch(f -> f.entityType.contains("Set"));
-        boolean hasMap = fields.stream().anyMatch(f -> f.entityType.contains("Map"));
-
-        if (hasDate) {
-            sb.append("import java.util.Date;\n");
-        }
-        if (hasLocalDate) {
-            sb.append("import java.time.*;\n");
-        }
-        if (hasList || hasSet || hasMap) {
-            sb.append("import java.util.*;\n");
-        }
-
-        sb.append(String.format("\nimport %s.shared.models.%s;\n", packageName, modelClass));
         sb.append("\n");
 
         sb.append("\n");
@@ -256,7 +257,8 @@ public class EntityCommand implements Callable<Integer> {
         }
 
         sb.append("\n\n");
-        sb.append(String.format("""
+        if(hasFields) {
+            sb.append(String.format("""
                     @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
                     interface %1$sMapper {
     
@@ -284,7 +286,7 @@ public class EntityCommand implements Callable<Integer> {
                         return %1$sMapper.INSTANCE.from(model);
                     }
                 """, modelClass));
-
+        }
         sb.append("\n}\n");
 
         return sb.toString();
@@ -292,9 +294,9 @@ public class EntityCommand implements Callable<Integer> {
 
     private String generateRepository(String packageName, String entityClass) {
         return String.format("""
-                package %s.repositories;
+                package %s.persistence.repositories;
 
-                import %s.entities.%sEntity;
+                import %s.persistence.entities.%sEntity;
                 import org.springframework.data.jpa.repository.JpaRepository;
                 import org.springframework.stereotype.Repository;
 
