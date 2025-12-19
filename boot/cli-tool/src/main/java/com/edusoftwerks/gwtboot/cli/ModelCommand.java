@@ -105,8 +105,7 @@ public class ModelCommand implements Callable<Integer> {
                     Console.success("Found " + fields.size() + " field(s) to copy");
                     // Extract imports needed for the field types
                     imports = extractImportsForFields(entityFile, fields);
-                }
-                else {
+                } else {
                     Console.info("No fields found");
                 }
             } catch (Exception e) {
@@ -124,17 +123,17 @@ public class ModelCommand implements Callable<Integer> {
         Files.writeString(modelFile,
                 String.format("""
                         package %s.shared.models;
-
+                        
                         import com.google.gwt.user.client.rpc.IsSerializable;
                         %s
                         public class %s implements IsSerializable {
-
+                        
                             private Long id;
-
+                        
                         %s
                             public %s() {
                             }
-
+                        
                             public Long getId() {
                                 return id;
                             }
@@ -180,8 +179,8 @@ public class ModelCommand implements Callable<Integer> {
         // Pattern to match field declarations: private Type name;
         // This handles generic types like List<String>, Map<K,V>, etc.
         Pattern fieldPattern = Pattern.compile(
-            "private\\s+([A-Za-z0-9_<>\\[\\],\\s]+)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*;",
-            Pattern.MULTILINE
+                "private\\s+([A-Za-z0-9_<>\\[\\],\\s]+)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*;",
+                Pattern.MULTILINE
         );
 
         Matcher matcher = fieldPattern.matcher(content);
@@ -204,14 +203,14 @@ public class ModelCommand implements Callable<Integer> {
             // Check if THIS field has JPA annotations we want to skip
             // Only check the text immediately before this field (not previous fields)
             if (betweenFields.contains("@Id") ||
-                betweenFields.contains("@GeneratedValue") ||
-                betweenFields.contains("@Version")) {
+                    betweenFields.contains("@GeneratedValue") ||
+                    betweenFields.contains("@Version")) {
                 // Make sure the annotation is for THIS field by checking there's no other
                 // field declaration between the annotation and our field
                 if (!betweenFields.replaceAll("@Id", "")
-                                  .replaceAll("@GeneratedValue", "")
-                                  .replaceAll("@Version", "")
-                                  .matches("(?s).*private\\s+.*")) {
+                        .replaceAll("@GeneratedValue", "")
+                        .replaceAll("@Version", "")
+                        .matches("(?s).*private\\s+.*")) {
                     lastFieldEnd = matcher.end();
                     continue;
                 }
@@ -228,25 +227,25 @@ public class ModelCommand implements Callable<Integer> {
         String capitalizedName = Utils.capitalize(field.name);
 
         return String.format("""
-
-                    public %s get%s() {
-                        return %s;
-                    }
-
-                    public void set%s(%s %s) {
-                        this.%s = %s;
-                    }
-                """, field.type, capitalizedName, field.name,
-                     capitalizedName, field.type, field.name, field.name, field.name);
+                        
+                            public %s get%s() {
+                                return %s;
+                            }
+                        
+                            public void set%s(%s %s) {
+                                this.%s = %s;
+                            }
+                        """, field.type, capitalizedName, field.name,
+                capitalizedName, field.type, field.name, field.name, field.name);
     }
 
     private String generateFieldDeclarations(List<FieldInfo> fields) {
         if (fields.isEmpty()) {
             return """
-                    // Add your Model fields here
-                    // Example:
-                    // private String name;
-                """;
+                        // Add your Model fields here
+                        // Example:
+                        // private String name;
+                    """;
         }
 
         StringBuilder sb = new StringBuilder();
@@ -293,9 +292,9 @@ public class ModelCommand implements Callable<Integer> {
             for (String typeName : typeNames) {
                 // Skip primitive types and java.lang types (automatically imported)
                 if (isPrimitive(typeName) || typeName.equals("String") || typeName.equals("Long") ||
-                    typeName.equals("Integer") || typeName.equals("Boolean") || typeName.equals("Double") ||
-                    typeName.equals("Float") || typeName.equals("Character") || typeName.equals("Byte") ||
-                    typeName.equals("Short")) {
+                        typeName.equals("Integer") || typeName.equals("Boolean") || typeName.equals("Double") ||
+                        typeName.equals("Float") || typeName.equals("Character") || typeName.equals("Byte") ||
+                        typeName.equals("Short")) {
                     continue;
                 }
 
@@ -303,7 +302,7 @@ public class ModelCommand implements Callable<Integer> {
                 for (String importStmt : allImports) {
                     // Skip JPA/Jakarta imports
                     if (importStmt.startsWith("jakarta.persistence") ||
-                        importStmt.startsWith("javax.persistence")) {
+                            importStmt.startsWith("javax.persistence")) {
                         continue;
                     }
 
@@ -338,8 +337,8 @@ public class ModelCommand implements Callable<Integer> {
 
     private boolean isPrimitive(String type) {
         return type.equals("int") || type.equals("long") || type.equals("double") ||
-               type.equals("float") || type.equals("boolean") || type.equals("char") ||
-               type.equals("byte") || type.equals("short");
+                type.equals("float") || type.equals("boolean") || type.equals("char") ||
+                type.equals("byte") || type.equals("short");
     }
 
     private String generateImports(Set<String> imports) {

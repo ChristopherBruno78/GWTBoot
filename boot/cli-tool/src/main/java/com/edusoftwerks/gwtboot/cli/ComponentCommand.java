@@ -111,40 +111,40 @@ public class ComponentCommand implements Callable<Integer> {
         Console.info("Creating " + componentClass + ".java...");
         Files.writeString(javaFile,
                 String.format("""
-                        package %s.client.components;
-
-                        import com.google.gwt.core.client.GWT;
-                        import com.google.gwt.resources.client.ClientBundle;
-                        import com.google.gwt.resources.client.StyleResource;
-                        import com.google.gwt.uibinder.client.UiBinder;
-                        import com.google.gwt.uibinder.client.UiTemplate;
-                        import com.google.gwt.user.client.ui.Composite;
-                        import com.google.gwt.user.client.ui.Widget;
-
-                        public class %s extends Composite {
-
-                            interface Resources extends ClientBundle {
-                                Resources INSTANCE = GWT.create(Resources.class);
-
-                                @Source("resources/%s/style.css")
-                                StyleResource style();
-
-                            }
-
-                            @UiTemplate("resources/%s/%s.ui.xml")
-                            interface %sUiBinder extends UiBinder<Widget, %s> {}
-
-                            private static final %sUiBinder uiBinder = GWT.create(%sUiBinder.class);
-
-                            static {
-                                Resources.INSTANCE.style().ensureInjected();
-                            }
-
-                            public %s() {
-                                initWidget(uiBinder.createAndBindUi(this));
-                            }
-                        }
-                        """, packageName, componentClass, componentNameLower, componentNameLower, componentClass,
+                                package %s.client.components;
+                                
+                                import com.google.gwt.core.client.GWT;
+                                import com.google.gwt.resources.client.ClientBundle;
+                                import com.google.gwt.resources.client.StyleResource;
+                                import com.google.gwt.uibinder.client.UiBinder;
+                                import com.google.gwt.uibinder.client.UiTemplate;
+                                import com.google.gwt.user.client.ui.Composite;
+                                import com.google.gwt.user.client.ui.Widget;
+                                
+                                public class %s extends Composite {
+                                
+                                    interface Resources extends ClientBundle {
+                                        Resources INSTANCE = GWT.create(Resources.class);
+                                
+                                        @Source("resources/%s/style.css")
+                                        StyleResource style();
+                                
+                                    }
+                                
+                                    @UiTemplate("resources/%s/%s.ui.xml")
+                                    interface %sUiBinder extends UiBinder<Widget, %s> {}
+                                
+                                    private static final %sUiBinder uiBinder = GWT.create(%sUiBinder.class);
+                                
+                                    static {
+                                        Resources.INSTANCE.style().ensureInjected();
+                                    }
+                                
+                                    public %s() {
+                                        initWidget(uiBinder.createAndBindUi(this));
+                                    }
+                                }
+                                """, packageName, componentClass, componentNameLower, componentNameLower, componentClass,
                         componentClass, componentClass, componentClass, componentClass, componentClass)
         );
 
@@ -152,8 +152,8 @@ public class ComponentCommand implements Callable<Integer> {
         Console.info("Creating style.css...");
         Files.writeString(cssFile,
                 """
-                /* Styles for component */
-                """
+                        /* Styles for component */
+                        """
         );
 
         // Create UiBinder XML file
@@ -163,7 +163,7 @@ public class ComponentCommand implements Callable<Integer> {
                         <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
                         <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
                                      xmlns:g="urn:import:com.google.gwt.user.client.ui">
-
+                        
                             <g:HTMLPanel>
                                 <!-- Add your widgets here -->
                             </g:HTMLPanel>
@@ -203,9 +203,9 @@ public class ComponentCommand implements Callable<Integer> {
         // Look for .gwt.xml files directly in the base package directory (not in subdirectories)
         try (java.util.stream.Stream<Path> files = Files.list(javaBase)) {
             java.util.Optional<Path> gwtXmlFile = files
-                .filter(Files::isRegularFile)
-                .filter(p -> p.getFileName().toString().endsWith(".gwt.xml"))
-                .findFirst();
+                    .filter(Files::isRegularFile)
+                    .filter(p -> p.getFileName().toString().endsWith(".gwt.xml"))
+                    .findFirst();
 
             if (gwtXmlFile.isPresent()) {
                 String fileName = gwtXmlFile.get().getFileName().toString();

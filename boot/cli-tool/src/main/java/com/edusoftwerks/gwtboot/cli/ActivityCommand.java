@@ -111,11 +111,11 @@ public class ActivityCommand implements Callable<Integer> {
                 String.format("""
                         <module rename-to="%s">
                             <inherits name="%s.%s"/>
-
+                        
                             <source path="client"/>
-
+                        
                             <entry-point class="%s.activities.%s.client.%sPresenter" />
-
+                        
                         </module>
                         """, activityName, packageName, mainModuleName, packageName, activityName, activityClass)
         );
@@ -182,15 +182,15 @@ public class ActivityCommand implements Callable<Integer> {
         Files.writeString(controllerFile,
                 String.format("""
                         package %s.activities.%s;
-
+                        
                         import org.springframework.stereotype.Controller;
                         import org.springframework.web.bind.annotation.GetMapping;
                         import org.springframework.web.bind.annotation.RequestMapping;
-
+                        
                         @Controller
                         @RequestMapping("/%s")
                         public class %sController {
-
+                        
                             @GetMapping
                             public String index() {
                                 return "%s/index";
@@ -267,9 +267,9 @@ public class ActivityCommand implements Callable<Integer> {
         // Look for .gwt.xml files directly in the base package directory (not in subdirectories)
         try (java.util.stream.Stream<Path> files = Files.list(javaBase)) {
             java.util.Optional<Path> gwtXmlFile = files
-                .filter(Files::isRegularFile)
-                .filter(p -> p.getFileName().toString().endsWith(".gwt.xml"))
-                .findFirst();
+                    .filter(Files::isRegularFile)
+                    .filter(p -> p.getFileName().toString().endsWith(".gwt.xml"))
+                    .findFirst();
 
             if (gwtXmlFile.isPresent()) {
                 String fileName = gwtXmlFile.get().getFileName().toString();

@@ -143,8 +143,8 @@ public class EntityCommand implements Callable<Integer> {
         // Pattern to match field declarations: private Type name;
         // This handles generic types like List<String>, arrays, etc.
         Pattern fieldPattern = Pattern.compile(
-            "^\\s*private\\s+([\\w<>\\[\\],\\s]+?)\\s+(\\w+)\\s*;",
-            Pattern.MULTILINE
+                "^\\s*private\\s+([\\w<>\\[\\],\\s]+?)\\s+(\\w+)\\s*;",
+                Pattern.MULTILINE
         );
 
         Matcher matcher = fieldPattern.matcher(content);
@@ -175,10 +175,10 @@ public class EntityCommand implements Callable<Integer> {
         if (hasFields) {
 
             sb.append("""
-                import org.mapstruct.Mapper;
-                import org.mapstruct.MappingConstants;
-                import org.mapstruct.factory.Mappers;
-                """);
+                    import org.mapstruct.Mapper;
+                    import org.mapstruct.MappingConstants;
+                    import org.mapstruct.factory.Mappers;
+                    """);
 
             boolean hasDate = fields.stream().anyMatch(f -> f.type.contains("Date"));
             boolean hasLocalDate = fields.stream().anyMatch(f -> f.type.contains("LocalDate") || f.type.contains("LocalDateTime"));
@@ -204,7 +204,7 @@ public class EntityCommand implements Callable<Integer> {
 
         sb.append("\n");
         sb.append("@Entity\n");
-        sb.append(String.format("@Table(name = \"%s\")\n",  Utils.toSnakeCase(modelClass)));
+        sb.append(String.format("@Table(name = \"%s\")\n", Utils.toSnakeCase(modelClass)));
         sb.append("public class ").append(modelClass).append("Entity {\n\n");
 
         // Add ID field
@@ -214,7 +214,7 @@ public class EntityCommand implements Callable<Integer> {
 
         // Add fields from model
         for (FieldInfo field : fields) {
-            if(!field.name.equals("id")) {
+            if (!field.name.equals("id")) {
                 // Check if this is a collection of entities (OneToMany relationship)
                 if (isCollectionOfEntities(field.entityType)) {
                     sb.append("    @OneToMany\n");
@@ -241,7 +241,7 @@ public class EntityCommand implements Callable<Integer> {
 
         // Add getters and setters for all fields
         for (FieldInfo field : fields) {
-            if(!field.name.equals("id")) {
+            if (!field.name.equals("id")) {
                 String capitalizedName = Utils.capitalize(field.name);
 
                 // Getter
@@ -257,35 +257,35 @@ public class EntityCommand implements Callable<Integer> {
         }
 
         sb.append("\n\n");
-        if(hasFields) {
+        if (hasFields) {
             sb.append(String.format("""
-                    @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-                    interface %1$sMapper {
-    
-                        %1$sMapper INSTANCE = Mappers.getMapper(%1$sMapper.class);
-    
-                        %1$s to(%1$sEntity entity);
-    
-                        %1$sEntity from(%1$s model);
-    
-                        // MapStruct will automatically generate implementations for these methods
-                        // Add custom mappings if field names differ between entity and model
-                        // Example:
-                        // @Mapping(source = "entityField", target = "modelField")
-                        // %1$s toCustom(%sEntity entity);
-    
-                    }
-    
-                    @Transient
-                    public %1$s to%1$s() {
-                        return %1$sMapper.INSTANCE.to(this);
-                    }
-    
-                    @Transient
-                    public static %1$sEntity from%1$s(%1$s model) {
-                        return %1$sMapper.INSTANCE.from(model);
-                    }
-                """, modelClass));
+                        @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+                        interface %1$sMapper {
+                    
+                            %1$sMapper INSTANCE = Mappers.getMapper(%1$sMapper.class);
+                    
+                            %1$s to(%1$sEntity entity);
+                    
+                            %1$sEntity from(%1$s model);
+                    
+                            // MapStruct will automatically generate implementations for these methods
+                            // Add custom mappings if field names differ between entity and model
+                            // Example:
+                            // @Mapping(source = "entityField", target = "modelField")
+                            // %1$s toCustom(%sEntity entity);
+                    
+                        }
+                    
+                        @Transient
+                        public %1$s to%1$s() {
+                            return %1$sMapper.INSTANCE.to(this);
+                        }
+                    
+                        @Transient
+                        public static %1$sEntity from%1$s(%1$s model) {
+                            return %1$sMapper.INSTANCE.from(model);
+                        }
+                    """, modelClass));
         }
         sb.append("\n}\n");
 
@@ -295,18 +295,18 @@ public class EntityCommand implements Callable<Integer> {
     private String generateRepository(String packageName, String entityClass) {
         return String.format("""
                 package %s.persistence.repositories;
-
+                
                 import %s.persistence.entities.%sEntity;
                 import org.springframework.data.jpa.repository.JpaRepository;
                 import org.springframework.stereotype.Repository;
-
+                
                 @Repository
                 public interface %sRepository extends JpaRepository<%sEntity, Long> {
-
+                
                     // Add custom query methods here
                     // Example:
                     // List<%sEntity> findByName(String name);
-
+                
                 }
                 """, packageName, packageName, entityClass, entityClass, entityClass, entityClass);
     }
