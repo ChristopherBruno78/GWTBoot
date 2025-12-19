@@ -18,9 +18,3 @@ server:
   servlet:
     session:
       timeout: 30m
-security:
-  urls:
-    sign-in: /user/signin
-    sign-out: /user/signout
-    secured:
-    defaultSuccessUrl: /
