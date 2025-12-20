@@ -1009,6 +1009,13 @@ public final class String implements Comparable<String>, CharSequence,
     public native String repeat(int count);
   }
 
+    public static native String format(final String format, final Object... args) /*-{
+        var i = 0;
+        return format.replace(/%s|%d|%f/g, function() {
+            return args[i++];
+        });
+    }-*/;
+
   // CHECKSTYLE_OFF: Utility Methods for unboxed String.
 
   protected static String $create() {
@@ -1057,6 +1064,8 @@ public final class String implements Comparable<String>, CharSequence,
     }
     return String.valueOf(chars, 0, charIdx);
   }
+
+
 
   protected static String $create(String other) {
     return checkNotNull(other);
