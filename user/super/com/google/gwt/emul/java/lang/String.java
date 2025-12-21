@@ -1012,7 +1012,10 @@ public final class String implements Comparable<String>, CharSequence,
     public static native String format(final String format, final Object... args) /*-{
         var i = 0;
         return format.replace(/%s|%d|%f/g, function() {
-            return args[i++];
+            if(i < args.length) {
+                return args[i++];
+            }
+            return "";
         });
     }-*/;
 
