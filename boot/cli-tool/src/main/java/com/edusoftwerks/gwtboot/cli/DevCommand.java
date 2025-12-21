@@ -282,7 +282,7 @@ public class DevCommand implements Callable<Integer> {
 
                     // Print startup timing information
                     Console.info("");
-                    Console.success("GWT-Boot dev servers started");
+                    Console.success("GWT-Boot dev server started at http://localhost:8080/");
                     Console.info("===================================");
                     Console.info("Startup Times:");
                     Console.info(
