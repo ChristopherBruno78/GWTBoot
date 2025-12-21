@@ -1009,15 +1009,9 @@ public final class String implements Comparable<String>, CharSequence,
     public native String repeat(int count);
   }
 
-    public static native String format(final String format, final Object... args) /*-{
-        var i = 0;
-        return format.replace(/%s|%d|%f/g, function() {
-            if(i < args.length) {
-                return args[i++];
-            }
-            return "";
-        });
-    }-*/;
+    public static String format(final String format, final Object... args) {
+      return StringFormatUtil.format(format, args);
+    }
 
   // CHECKSTYLE_OFF: Utility Methods for unboxed String.
 

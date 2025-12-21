@@ -187,14 +187,6 @@
                 <groupId>com.hubspot.maven.plugins</groupId>
                 <artifactId>prettier-maven-plugin</artifactId>
                 <version>${plugin.prettier.version}</version>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>${plugin.prettier.goal}</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
 
