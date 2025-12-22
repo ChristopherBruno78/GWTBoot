@@ -62,6 +62,7 @@ public class BrowserEvents {
   public static final String POINTERUP = "pointerup";
   public static final String POINTERCANCEL = "pointercancel";
 
+
   @Deprecated
   public static final String MOUSEWHEEL = "mousewheel";
   public static final String WHEEL = "wheel";
