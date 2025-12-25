@@ -93,6 +93,7 @@ public class UiBinderParser {
   private static final String REPEAT_STYLE_ATTRIBUTE = "repeatStyle";
   private static final String SOURCE_ATTRIBUTE = "src";
   private static final String TYPE_ATTRIBUTE = "type";
+  private static final String NAME_ATTRIBUTE = "name";
   private static final String GSS_ATTRIBUTE = "gss";
   private static final String DO_NOT_EMBED_ATTRIBUTE = "doNotEmbed";
   private static final String MIME_TYPE_ATTRIBUTE = "mimeType";
@@ -438,6 +439,37 @@ public class UiBinderParser {
     FieldWriter fieldWriter = fieldManager.registerField(
         FieldWriterType.IMPORTED, fieldType, constantName);
     fieldWriter.setInitializer(rawFieldName);
+  }
+
+  private void createIcon(XMLElement elem) throws UnableToCompleteException {
+    String iconName = elem.consumeRequiredRawAttribute(NAME_ATTRIBUTE);
+    String iconType = elem.consumeRequiredRawAttribute(TYPE_ATTRIBUTE);
+
+    // Validate type is svg or font
+    String iconClassName;
+    if ("svg".equalsIgnoreCase(iconType)) {
+      iconClassName = "com.google.gwt.user.client.ui.SVGIcon";
+    } else if ("font".equalsIgnoreCase(iconType)) {
+      iconClassName = "com.google.gwt.user.client.ui.FontIcon";
+    } else {
+      writer.die(elem, "Icon type must be either \"svg\" or \"font\", got \"%s\"", iconType);
+      return;
+    }
+
+    // Find the icon class
+    JClassType iconClass = oracle.findType(iconClassName);
+    if (iconClass == null) {
+      writer.die(elem, "Cannot find icon class: %s", iconClassName);
+      return;
+    }
+
+    // Register field
+    FieldWriter fieldWriter = fieldManager.registerField(
+        FieldWriterType.IMPORTED, iconClass, iconName);
+
+    // Set initializer to create new instance
+    String initializer = String.format("new %s(\"%s\")", iconClassName, iconName);
+    fieldWriter.setInitializer(initializer);
   }
 
   private void createStyle(XMLElement elem) throws UnableToCompleteException {

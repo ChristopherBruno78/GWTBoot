@@ -58,8 +58,9 @@ public class ServiceCommand implements Callable<Integer> {
         Console.println("Package: " + packageName);
         Console.println("");
 
+        String serviceNameLowerCase = serviceName.toLowerCase();
         // Check for existing files
-        Path sharedServicesDir = javaBase.resolve("shared/services").resolve(serviceName);
+        Path sharedServicesDir = javaBase.resolve("shared/services").resolve(serviceNameLowerCase);
         Path servicesDir = javaBase.resolve("services");
 
         java.util.List<Path> existingFiles = new java.util.ArrayList<>();
@@ -93,6 +94,7 @@ public class ServiceCommand implements Callable<Integer> {
 
         // Create Service interface
         Console.info("Creating " + serviceClass + "Service.java...");
+
         Files.writeString(serviceFile,
                 String.format("""
                                 package %s.shared.services.%s;
@@ -113,13 +115,13 @@ public class ServiceCommand implements Callable<Integer> {
                                           %sService.class
                                         );
                                 
-                                        public static %sServiceAsync get() {
+                                        public static %sServiceAsync getInstance() {
                                           return INSTANCE;
                                         }
                                       }
                                 
                                 }
-                                """, packageName, serviceName, serviceName, serviceClass,
+                                """, packageName, serviceNameLowerCase, serviceNameLowerCase, serviceClass,
                         serviceClass, serviceClass, serviceClass)
         );
 
@@ -138,7 +140,7 @@ public class ServiceCommand implements Callable<Integer> {
                             // void exampleMethod(String parameter, AsyncCallback<String> callback);
                         
                         }
-                        """, packageName, serviceName, serviceClass)
+                        """, packageName, serviceNameLowerCase, serviceClass)
         );
 
         // Create Service implementation
