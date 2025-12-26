@@ -397,7 +397,7 @@ public class DevCommand implements Callable<Integer> {
         Console.info("Watching " + watchKeys.size() + " directories for changes");
 
         long lastCompileTime = 0;
-        final long DEBOUNCE_MS = 250;
+        final long DEBOUNCE_MS = 5000;
         final long STARTUP_GRACE_PERIOD_MS = 5000; // Ignore events for first 5 seconds
         long watcherStartTime = System.currentTimeMillis();
 

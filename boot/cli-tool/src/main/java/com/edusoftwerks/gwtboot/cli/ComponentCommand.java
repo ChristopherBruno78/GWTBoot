@@ -132,7 +132,7 @@ public class ComponentCommand implements Callable<Integer> {
                                     }
                                 
                                     @UiTemplate("resources/%s/%s.ui.xml")
-                                    interface %sUiBinder extends UiBinder<Widget, %s> {}
+                                    interface %sUiBinder extends UiBinder<HTMLPanel, %s> {}
                                 
                                     private static final %sUiBinder uiBinder = GWT.create(%sUiBinder.class);
                                 
