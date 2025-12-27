@@ -135,29 +135,4 @@ public class DevCommand implements Callable<Integer> {
         return ProcessExecutor.executeCommandInBackgroundWithOutput(command);
     }
 
-    private boolean isProcessRunning(long pid) {
-        try {
-            String os = System.getProperty("os.name").toLowerCase();
-            ProcessBuilder pb;
-
-            if (os.contains("win")) {
-                // Windows: tasklist /FI "PID eq <pid>"
-                pb = new ProcessBuilder("tasklist", "/FI", "PID eq " + pid);
-            } else {
-                // Unix/Linux/Mac: ps -p <pid>
-                pb = new ProcessBuilder("ps", "-p", String.valueOf(pid));
-            }
-
-            Process process = pb.start();
-            int exitCode = process.waitFor();
-
-            // Exit code 0 means the process exists
-            return exitCode == 0;
-        } catch (IOException | InterruptedException e) {
-            // If we can't check, assume it's not running
-            return false;
-        }
-    }
-
-
 }
