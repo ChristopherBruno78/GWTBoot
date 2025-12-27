@@ -206,32 +206,13 @@ public class ActivityCommand implements Callable<Integer> {
         Files.createDirectories(templatesDir);
         Files.writeString(htmlFile,
                 String.format("""
-                        <!DOCTYPE html>
-                        <html lang="en">
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                            <meta name="csrf-token" th:content="${_csrf.token}"/>
+                            {% extends "base" %}
                         
-                            <title>%s</title>
+                                {% block title %} %s {% endblock %}
                         
-                            <style>
-                                    html, body {
-                                        line-height: 1.6;
-                                        text-rendering: optimizeLegibility;
-                                        -webkit-font-smoothing: antialiased;
-                                        -moz-osx-font-smoothing: grayscale;
-                                        margin: 0;
-                                        height: 100%%;
-                                    }
-                            </style>
-                        
-                            <script type="text/javascript" src="/%s/%s.nocache.js" defer></script>
-                        </head>
-                        <body>
-                        
-                        </body>
-                        </html>
+                            {% block scripts %}
+                            <script type="text/javascript" src="/%s/%s.nocache.js"></script>
+                            {% endblock %}
                         """, capitalize(activityName), activityName, activityName)
         );
 
