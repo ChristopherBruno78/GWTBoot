@@ -42,32 +42,6 @@ public class DevCommand implements Callable<Integer> {
         Console.info("===================================");
         Console.println("");
 
-        // Check if CodeServer is already running
-        Path pidFile = Paths.get("target/gwt-codeserver.pid");
-        if (Files.exists(pidFile)) {
-            try {
-                String pidString = Files.readString(pidFile).trim();
-                long pid = Long.parseLong(pidString);
-
-                // Check if process is still running
-                if (isProcessRunning(pid)) {
-                    Console.error("GWT CodeServer is already running (PID: " + pid + ")");
-                    Console.error("Stop it first using: kill -9 " + pid);
-                    return 1;
-                }
-
-                // PID file exists but process is dead, clean it up
-                Files.delete(pidFile);
-                Console.info("Cleaned up stale CodeServer PID file");
-            } catch (NumberFormatException | IOException e) {
-                // Invalid or unreadable PID file, delete it
-                try {
-                    Files.delete(pidFile);
-                } catch (IOException ex) {
-                    // Ignore
-                }
-            }
-        }
 
         // Check if pom.xml exists in current directory
         Path pomPath = Paths.get("pom.xml");
@@ -130,11 +104,6 @@ public class DevCommand implements Callable<Integer> {
             Console.error("Check the error messages above for details");
             return 1;
         }
-
-        // Save the PID for later reference
-        pidFile = Paths.get("target/gwt-codeserver.pid");
-        Files.createDirectories(pidFile.getParent());
-        Files.writeString(pidFile, String.valueOf(pid));
 
         return process.waitFor();
     }
