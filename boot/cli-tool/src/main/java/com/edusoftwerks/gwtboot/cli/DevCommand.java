@@ -136,14 +136,6 @@ public class DevCommand implements Callable<Integer> {
         Files.createDirectories(pidFile.getParent());
         Files.writeString(pidFile, String.valueOf(pid));
 
-        Console.println("");
-        Console.println("=============================");
-        Console.println("");
-        Console.success("GWT CodeServer started successfully!");
-        Console.info("CodeServer URL: http://localhost:9876/");
-        Console.info("Process ID: " + pid);
-        Console.println("");
-
         return process.waitFor();
     }
 
