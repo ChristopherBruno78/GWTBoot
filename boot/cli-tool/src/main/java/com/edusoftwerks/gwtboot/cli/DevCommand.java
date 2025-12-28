@@ -18,6 +18,7 @@ import static java.nio.file.StandardWatchEventKinds.*;
 
 @Command(
         name = "dev",
+        aliases = {"codeserver"},
         description = "Launch the GWT CodeServer for development",
         mixinStandardHelpOptions = true
 )
@@ -29,13 +30,8 @@ public class DevCommand implements Callable<Integer> {
     )
     private int maxMemoryMb;
 
-    // Shared state for tracking hot reload timing
-    private volatile boolean waitingForRestart = false;
-    private volatile long reloadStartTime = 0;
-
     @Override
     public Integer call() throws Exception {
-        long codeServerStartTime = System.currentTimeMillis();
 
         Console.info("===================================");
         Console.info("Starting GWT CodeServer");
@@ -91,21 +87,7 @@ public class DevCommand implements Callable<Integer> {
         Console.println("=== GWT CodeServer Output ===");
         Console.println("");
 
-        Process process = executeGwtCodeServer(classpath, moduleNames, maxMemoryMb);
-        long pid = process.pid();
-
-        // Give the CodeServer a moment to start
-        Thread.sleep(2000);
-
-        // Check if process died immediately
-        if (!process.isAlive()) {
-            Console.println("");
-            Console.error("GWT CodeServer failed to start!");
-            Console.error("Check the error messages above for details");
-            return 1;
-        }
-
-        return process.waitFor();
+        return executeGwtCodeServer(classpath, moduleNames, maxMemoryMb).waitFor();
     }
 
     private Process executeGwtCodeServer(
