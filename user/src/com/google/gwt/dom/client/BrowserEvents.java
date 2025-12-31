@@ -68,6 +68,7 @@ public class BrowserEvents {
   public static final String WHEEL = "wheel";
   public static final String PROGRESS = "progress";
   public static final String SCROLL = "scroll";
+  public static final String SUBMIT = "submit";
   public static final String TOUCHCANCEL = "touchcancel";
   public static final String TOUCHEND = "touchend";
   public static final String TOUCHMOVE = "touchmove";
