@@ -35,9 +35,6 @@ import java.util.Map;
 public class AttributeParsers {
   private static final String HORIZ_CONSTANT = HorizontalAlignmentConstant.class.getCanonicalName();
   private static final String VERT_CONSTANT = VerticalAlignmentConstant.class.getCanonicalName();
-  @SuppressWarnings("deprecation")
-  private static final String TEXT_ALIGN_CONSTANT = 
-    com.google.gwt.user.client.ui.TextBoxBase.TextAlignConstant.class.getCanonicalName();
   private static final String INT = "int";
   private static final String STRING = String.class.getCanonicalName();
   private static final String DOUBLE = "double";
@@ -82,8 +79,6 @@ public class AttributeParsers {
           converter, types.parse(HORIZ_CONSTANT), logger));
       addAttributeParser(VERT_CONSTANT, new VerticalAlignmentConstantParser(
           converter, types.parse(VERT_CONSTANT), logger));
-      addAttributeParser(TEXT_ALIGN_CONSTANT, new TextAlignConstantParser(
-          converter, types.parse(TEXT_ALIGN_CONSTANT), logger));
 
       StringAttributeParser stringParser = new StringAttributeParser(converter, types.parse(STRING));
       addAttributeParser(STRING, stringParser);

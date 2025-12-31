@@ -20,7 +20,6 @@ import com.google.gwt.i18n.client.HasDirection.Direction;
 import com.google.gwt.i18n.shared.BidiFormatter;
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 
 /**
  * Tests {@link ListBox}. Needs many, many more tests.

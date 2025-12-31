@@ -74,7 +74,7 @@ import com.google.gwt.user.client.ui.impl.HyperlinkImpl;
  * @see Anchor
  */
 @SuppressWarnings("deprecation")
-public class Hyperlink extends Widget implements HasHTML, SourcesClickEvents,
+public class Hyperlink extends Widget implements HasHTML,
     HasClickHandlers, HasDirectionEstimator, HasDirectionalSafeHtml {
 
   public static final DirectionEstimator DEFAULT_DIRECTION_ESTIMATOR =
@@ -250,15 +250,6 @@ public class Hyperlink extends Widget implements HasHTML, SourcesClickEvents,
     return addHandler(handler, ClickEvent.getType());
   }
 
-  /**
-   * @deprecated Use {@link Anchor#addClickHandler} instead and call
-   *     History.newItem from the handler if you need to process the
-   *     click before the history token is set.
-   */
-  @Deprecated
-  public void addClickListener(ClickListener listener) {
-    ListenerWrapper.WrappedClickListener.add(this, listener);
-  }
 
   public DirectionEstimator getDirectionEstimator() {
     return directionalTextHelper.getDirectionEstimator();
@@ -295,14 +286,6 @@ public class Hyperlink extends Widget implements HasHTML, SourcesClickEvents,
     }
   }
 
-  /**
-   * @deprecated Use the {@link HandlerRegistration#removeHandler}
-   * method on the object returned by an add*Handler method instead
-   */
-  @Deprecated
-  public void removeClickListener(ClickListener listener) {
-    ListenerWrapper.WrappedClickListener.remove(this, listener);
-  }
 
   /**
    * {@inheritDoc}

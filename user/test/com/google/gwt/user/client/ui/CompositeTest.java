@@ -23,7 +23,6 @@ import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 
 /**

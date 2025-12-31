@@ -64,7 +64,7 @@ import java.util.NoSuchElementException;
  * </p>
  */
 @SuppressWarnings("deprecation")
-public abstract class HTMLTable extends Panel implements SourcesTableEvents,
+public abstract class HTMLTable extends Panel implements
     HasAllDragAndDropHandlers, HasClickHandlers, HasDoubleClickHandlers {
 
   /**
@@ -829,18 +829,6 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
     return addBitlessDomHandler(handler, DropEvent.getType());
   }
 
-  /**
-   * Adds a listener to the current table.
-   * 
-   * @param listener listener to add
-   * @deprecated add a click handler instead and use
-   *             {@link HTMLTable#getCellForEvent(ClickEvent)} to get the cell
-   *             information (remember to check for a null return value)
-   */
-  @Deprecated
-  public void addTableListener(TableListener listener) {
-    ListenerWrapper.WrappedTableListener.add(this, listener);
-  }
 
   /**
    * Removes all widgets from this table, but does not remove other HTML or text
@@ -1093,18 +1081,7 @@ public abstract class HTMLTable extends Panel implements SourcesTableEvents,
     return true;
   }
 
-  /**
-   * Removes the specified table listener.
-   * 
-   * @param listener listener to remove
-   *
-   * @deprecated Use the {@link HandlerRegistration#removeHandler}
-   * method on the object returned by an add*Handler method instead
-   */
-  @Deprecated
-  public void removeTableListener(TableListener listener) {
-    ListenerWrapper.WrappedTableListener.remove(this, listener);
-  }
+
 
   /**
    * Sets the width of the table's border. This border is displayed around all

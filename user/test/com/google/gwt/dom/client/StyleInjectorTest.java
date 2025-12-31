@@ -17,7 +17,6 @@ package com.google.gwt.dom.client;
 
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 
 /**
  * Tests StyleInjector by looking for effects of injected CSS on DOM elements.

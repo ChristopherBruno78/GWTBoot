@@ -141,43 +141,13 @@ public class History {
     }
   }
 
-  @SuppressWarnings("deprecation")
-  private static class WrapHistory extends BaseListenerWrapper<HistoryListener>
-      implements ValueChangeHandler<String> {
-    @Deprecated
-    public static void add(HistoryListener listener) {
-      addValueChangeHandler(new WrapHistory(listener));
-    }
 
-    public static void remove(HandlerManager manager, HistoryListener listener) {
-      baseRemove(manager, listener, ValueChangeEvent.getType());
-    }
-
-    private WrapHistory(HistoryListener listener) {
-      super(listener);
-    }
-
-    @Override
-    public void onValueChange(ValueChangeEvent<String> event) {
-      listener.onHistoryChanged(event.getValue());
-    }
-  }
 
   private static HistoryImpl impl = GWT.create(HistoryImpl.class);
   private static HistoryEventSource historyEventSource = new HistoryEventSource();
   private static HistoryTokenEncoder tokenEncoder = GWT.create(HistoryTokenEncoder.class);
   private static String token = getDecodedHash();
 
-  /**
-   * Adds a listener to be informed of changes to the browser's history stack.
-   *
-   * @param listener the listener to be added
-   * @deprecated use {@link History#addValueChangeHandler(ValueChangeHandler)} instead
-   */
-  @Deprecated
-  public static void addHistoryListener(HistoryListener listener) {
-    WrapHistory.add(listener);
-  }
 
   /**
    * Adds a {@link com.google.gwt.event.logical.shared.ValueChangeEvent} handler
@@ -291,15 +261,7 @@ public class History {
     historyEventSource.fireValueChangedEvent(historyToken);
   }
 
-  /**
-   * Removes a history listener.
-   *
-   * @param listener the listener to be removed
-   */
-  @Deprecated
-  public static void removeHistoryListener(HistoryListener listener) {
-    WrapHistory.remove(historyEventSource.getHandlers(), listener);
-  }
+
 
   /**
    * Replace the current history token on top of the browsers history stack.

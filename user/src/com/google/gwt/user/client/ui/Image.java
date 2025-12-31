@@ -127,9 +127,8 @@ import java.util.HashMap;
  * </p>
  */
 @SuppressWarnings("deprecation")
-public class Image extends Widget implements SourcesLoadEvents, HasLoadHandlers, HasErrorHandlers,
-    SourcesClickEvents, HasClickHandlers, HasDoubleClickHandlers, HasAllDragAndDropHandlers,
-    HasAllGestureHandlers, HasAllMouseHandlers, HasAllTouchHandlers, SourcesMouseEvents {
+public class Image extends Widget implements HasLoadHandlers, HasErrorHandlers,  HasClickHandlers, HasDoubleClickHandlers, HasAllDragAndDropHandlers,
+    HasAllGestureHandlers, HasAllMouseHandlers, HasAllTouchHandlers   {
 
   /**
    * The attribute that is set when an image fires a native load or error event
@@ -609,13 +608,7 @@ public class Image extends Widget implements SourcesLoadEvents, HasLoadHandlers,
     return addHandler(handler, ClickEvent.getType());
   }
 
-  /**
-   * @deprecated Use {@link #addClickHandler} instead
-   */
-  @Deprecated
-  public void addClickListener(ClickListener listener) {
-    ListenerWrapper.WrappedClickListener.add(this, listener);
-  }
+
 
   public HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler) {
     return addHandler(handler, DoubleClickEvent.getType());
@@ -669,28 +662,13 @@ public class Image extends Widget implements SourcesLoadEvents, HasLoadHandlers,
     return addHandler(handler, LoadEvent.getType());
   }
 
-  /**
-   * @deprecated use {@link com.google.gwt.event.dom.client.LoadHandler} and
-   *             {@link com.google.gwt.event.dom.client.ErrorHandler} instead
-   */
-  @Deprecated
-  public void addLoadListener(LoadListener listener) {
-    ListenerWrapper.WrappedLoadListener.add(this, listener);
-  }
+
 
   public HandlerRegistration addMouseDownHandler(MouseDownHandler handler) {
     return addDomHandler(handler, MouseDownEvent.getType());
   }
 
-  /**
-   * @deprecated Use {@link #addMouseOverHandler} {@link #addMouseMoveHandler},
-   *             {@link #addMouseDownHandler}, {@link #addMouseUpHandler} and
-   *             {@link #addMouseOutHandler} instead
-   */
-  @Deprecated
-  public void addMouseListener(MouseListener listener) {
-    ListenerWrapper.WrappedMouseListener.add(this, listener);
-  }
+
 
   public HandlerRegistration addMouseMoveHandler(MouseMoveHandler handler) {
     return addDomHandler(handler, MouseMoveEvent.getType());
@@ -712,13 +690,7 @@ public class Image extends Widget implements SourcesLoadEvents, HasLoadHandlers,
     return addDomHandler(handler, MouseWheelEvent.getType());
   }
 
-  /**
-   * @deprecated Use {@link #addMouseWheelHandler} instead
-   */
-  @Deprecated
-  public void addMouseWheelListener(MouseWheelListener listener) {
-    ListenerWrapper.WrappedMouseWheelListener.add(this, listener);
-  }
+
 
   public HandlerRegistration addTouchCancelHandler(TouchCancelHandler handler) {
     return addDomHandler(handler, TouchCancelEvent.getType());
@@ -814,42 +786,6 @@ public class Image extends Widget implements SourcesLoadEvents, HasLoadHandlers,
     }
 
     super.onBrowserEvent(event);
-  }
-
-  /**
-   * @deprecated Use the {@link HandlerRegistration#removeHandler} method on the
-   *             object returned by {@link #addClickHandler} instead
-   */
-  @Deprecated
-  public void removeClickListener(ClickListener listener) {
-    ListenerWrapper.WrappedClickListener.remove(this, listener);
-  }
-
-  /**
-   * @deprecated Use the {@link HandlerRegistration#removeHandler} method on the
-   *             object returned by an add*Handler method instead
-   */
-  @Deprecated
-  public void removeLoadListener(LoadListener listener) {
-    ListenerWrapper.WrappedLoadListener.remove(this, listener);
-  }
-
-  /**
-   * @deprecated Use the {@link HandlerRegistration#removeHandler} method on the
-   *             object returned by an add*Handler method instead
-   */
-  @Deprecated
-  public void removeMouseListener(MouseListener listener) {
-    ListenerWrapper.WrappedMouseListener.remove(this, listener);
-  }
-
-  /**
-   * @deprecated Use the {@link HandlerRegistration#removeHandler} method on the
-   *             object returned by {@link #addMouseWheelHandler} instead
-   */
-  @Deprecated
-  public void removeMouseWheelListener(MouseWheelListener listener) {
-    ListenerWrapper.WrappedMouseWheelListener.remove(this, listener);
   }
 
   /**

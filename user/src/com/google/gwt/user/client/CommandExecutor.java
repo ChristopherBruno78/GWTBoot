@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Class which executes {@link Command}s and {@link IncrementalCommand}s after
+ * Class which executes {@link Command}s  after
  * all currently pending event handlers have completed. This class attempts to
  * protect against slow script warnings by running commands in small time
  * increments.
@@ -32,15 +32,8 @@ import java.util.List;
  * warning which a user may choose to cancel. In that event, a
  * {@link CommandCanceledException} or an
  * {@link IncrementalCommandCanceledException} is reported through
- * {@link GWT#reportUncaughtException} depending on the type of command which
- * caused the warning. All other commands will continue to be executed.
  * </p>
  *
- * TODO(mmendez): Can an SSW be detected without using a timer? Currently, if a
- * {@link Command} or an {@link IncrementalCommand} calls either
- * {@link Window#alert(String)} or the JavaScript <code>alert(String)</code>
- * methods directly or indirectly then the  cancellation timer can fire,
- * resulting in a false SSW cancellation detection.
  */
 class CommandExecutor {
 
@@ -227,16 +220,6 @@ class CommandExecutor {
     maybeStartExecutionTimer();
   }
 
-  /**
-   * Submits an {@link IncrementalCommand} for execution.
-   * 
-   * @param command command to submit
-   */
-  public void submit(IncrementalCommand command) {
-    commands.add(command);
-
-    maybeStartExecutionTimer();
-  }
 
   /**
    * Removes the command from the queue and throws either a
@@ -251,8 +234,6 @@ class CommandExecutor {
 
     if (cmd instanceof Command) {
       throw new CommandCanceledException((Command) cmd);
-    } else if (cmd instanceof IncrementalCommand) {
-      throw new IncrementalCommandCanceledException((IncrementalCommand) cmd);
     }
 
     setExecuting(false);
@@ -299,9 +280,6 @@ class CommandExecutor {
           if (element instanceof Command) {
             Command command = (Command) element;
             command.execute();
-          } else if (element instanceof IncrementalCommand) {
-            IncrementalCommand incrementalCommand = (IncrementalCommand) element;
-            removeCommand = !incrementalCommand.execute();
           }
 
         } finally {

@@ -23,12 +23,7 @@ import com.google.gwt.core.client.Scheduler;
  * <p>
  * The Command interface provides a layer of separation between the code
  * specifying some behavior and the code invoking that behavior. This separation
- * aids in creating reusable code. For example, a
- * {@link com.google.gwt.user.client.ui.MenuItem} can have a Command associated
- * with it that it executes when the menu item is chosen by the user.
- * Importantly, the code that constructed the Command to be executed when the
- * menu item is invoked knows nothing about the internals of the MenuItem class
- * and vice-versa.
+ * aids in creating reusable code.
  * </p>
  * 
  * <p>
