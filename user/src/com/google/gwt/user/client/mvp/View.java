@@ -17,9 +17,4 @@ public abstract class View<T extends ViewPresenter> extends Composite {
     this.presenter.onViewLoaded();
   }
 
-  @Override
-  protected void onDetach() {
-    super.onDetach();
-    this.presenter.onViewDismissed();
-  }
 }

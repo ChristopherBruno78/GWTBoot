@@ -10,6 +10,7 @@ public abstract class ViewPresenter<T extends View> implements EntryPoint {
   public ViewPresenter(T view) {
     this.view = view;
     this.view.setPresenter(this);
+    this.addPageShowHandler();
     this.view.bind();
   }
 
@@ -28,5 +29,11 @@ public abstract class ViewPresenter<T extends View> implements EntryPoint {
 
   protected void onViewLoaded() {}
 
-  protected void onViewDismissed() {}
+  private native void addPageShowHandler() /*-{
+        var self = this;
+        window.addEventListener("pageshow", function () {
+            self.@com.google.gwt.user.client.mvp.ViewPresenter::onViewLoaded()();
+        });
+  }-*/;
+
 }
