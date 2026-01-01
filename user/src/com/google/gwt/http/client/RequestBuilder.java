@@ -22,7 +22,7 @@ import com.google.gwt.xhr.client.XMLHttpRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.google.gwt.user.client.MetaData.meta;
+import static com.google.gwt.user.client.Meta.getContent;
 
 
 /**
@@ -159,9 +159,9 @@ public class RequestBuilder {
     this.httpMethod = httpMethod;
     this.url = url;
 
-    String csrfToken = meta("csrf-token");
+    String csrfToken = getContent("csrf-token");
     if (csrfToken == null) {
-        csrfToken = meta("csrf");
+        csrfToken = getContent("csrf");
     }
 
     if(csrfToken != null) {

@@ -19,7 +19,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 
-import static com.google.gwt.user.client.MetaData.meta;
+import static com.google.gwt.user.client.Meta.getContent;
 
 /**
  * This class encapsulates the logic necessary to configure a RequestBuilder for
@@ -154,9 +154,9 @@ public class RpcRequestBuilder {
    */
   protected RequestBuilder doCreate(String serviceEntryPoint) {
     RequestBuilder rb = new RequestBuilder(RequestBuilder.POST, serviceEntryPoint);
-    String csrfToken = meta("csrf-token");
+    String csrfToken = getContent("csrf-token");
     if (csrfToken == null) {
-        csrfToken = meta("csrf");
+        csrfToken = getContent("csrf");
     }
     if(csrfToken != null) {
         rb.setHeader("X-CSRF-Token", csrfToken);
