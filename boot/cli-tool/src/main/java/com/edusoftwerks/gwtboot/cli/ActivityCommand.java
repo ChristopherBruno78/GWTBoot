@@ -206,13 +206,13 @@ public class ActivityCommand implements Callable<Integer> {
         Files.createDirectories(templatesDir);
         Files.writeString(htmlFile,
                 String.format("""
-                            {% extends "base" %}
+                            {%% extends "base" %%}
                         
-                                {% block title %} %s {% endblock %}
+                                {%% block title %%} %s {%% endblock %%}
                         
-                            {% block scripts %}
+                            {%% block scripts %%}
                             <script type="text/javascript" src="/%s/%s.nocache.js"></script>
-                            {% endblock %}
+                            {%% endblock %%}
                         """, capitalize(activityName), activityName, activityName)
         );
 
